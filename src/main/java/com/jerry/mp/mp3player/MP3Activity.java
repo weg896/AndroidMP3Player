@@ -99,8 +99,8 @@ public class MP3Activity extends AppCompatActivity {
     private Runnable progressingBarUpdate = new Runnable(){
         public void run(){
             musicCurrentPlace = mediaPlayer.getCurrentPosition();
-            progressingBar.setProgress(musicCurrentPlace/musicDuration * progressingBar.getMax());
-            int temp = musicCurrentPlace/musicDuration * progressingBar.getMax();
+            progressingBar.setProgress(musicCurrentPlace * progressingBar.getMax() / musicDuration);
+            int temp = musicCurrentPlace * progressingBar.getMax() / musicDuration;
             Log.d(MP3PlayerTAG, "time: " +temp+" musCp: " + musicCurrentPlace +" musDr: "+musicDuration+" progeMa: "+progressingBar.getMax());
             progressingBarHandler.postDelayed(this,100);
         }
