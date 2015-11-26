@@ -14,6 +14,7 @@ public class MP3Activity extends AppCompatActivity {
 
     String sampleMP3URL = "http://www.stephaniequinn.com/Music/Allegro%20from%20Duet%20in%20C%20Major.mp3";
 
+    // git testing
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
