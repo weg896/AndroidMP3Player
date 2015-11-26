@@ -2,6 +2,7 @@ package com.jerry.mp.mp3player;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,17 +21,23 @@ public class MP3Activity extends AppCompatActivity {
     Button backward5Button; // backward 5 second
 
     TextView musicNameTextView; // show the music's name
-    SeekBar processingBar;
+    SeekBar progressingBar;
 
     MediaPlayer mediaPlayer;
     String sampleMP3URL = "http://www.stephaniequinn.com/Music/Allegro%20from%20Duet%20in%20C%20Major.mp3";
     String MP3PlayerTAG = "mp3 player";
     int musicDuration = 0;
+    int musicCurrentPlace = 0;
+
+    Handler progressingBarHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mp3);
+
+        progressingBarHandler = new Handler();
+
 
         // initial the screen view components
         controlButton = (Button) findViewById(R.id.play_pause_button);
@@ -38,7 +45,7 @@ public class MP3Activity extends AppCompatActivity {
         backward5Button = (Button) findViewById(R.id.backward_5_button);
 
         musicNameTextView = (TextView) findViewById(R.id.music_name_textView);
-        processingBar = (SeekBar) findViewById(R.id.progressing_bar);
+        progressingBar = (SeekBar) findViewById(R.id.progressing_bar);
 
         // initial the media player
         mediaPlayer = new MediaPlayer();
@@ -52,6 +59,7 @@ public class MP3Activity extends AppCompatActivity {
         }
         musicDuration = mediaPlayer.getDuration();
 
+        progressingBarHandler.postDelayed(progressingBarUpdate, 100);
 
         // set up listener for screen view components
         controlButton.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +75,7 @@ public class MP3Activity extends AppCompatActivity {
             }
         });
 
+        /*
         forward5Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,8 +85,27 @@ public class MP3Activity extends AppCompatActivity {
             }
         });
 
+        backward5Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+
+
+            }
+        });
+        */
     }
+
+    private Runnable progressingBarUpdate = new Runnable(){
+        public void run(){
+            musicCurrentPlace = mediaPlayer.getCurrentPosition();
+            progressingBar.setProgress(musicCurrentPlace/musicDuration * progressingBar.getMax());
+            int temp = musicCurrentPlace/musicDuration * progressingBar.getMax();
+            Log.d(MP3PlayerTAG, "time: " +temp+" musCp: " + musicCurrentPlace +" musDr: "+musicDuration+" progeMa: "+progressingBar.getMax());
+            progressingBarHandler.postDelayed(this,100);
+        }
+    };
+
 
 
     @Override

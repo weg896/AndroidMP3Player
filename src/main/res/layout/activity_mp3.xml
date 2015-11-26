@@ -22,8 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/progressing_bar"
-        android:layout_above="@+id/play_stop_button"
-        android:layout_marginBottom="37dp" />
+        android:layout_marginBottom="38dp"
+        android:layout_above="@+id/play_pause_button"
+        android:layout_alignEnd="@+id/forward_5_button" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
