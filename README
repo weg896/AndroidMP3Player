@@ -1,2 +1,7 @@
-version 1.0: a media player only using Activity and Media classes
+version 1.0: a media player only using one Activity and Media classes
 next version will try to implement a Server so that music can play on backgroun
+
+main idea
+1. Media object get the mp3 stream from internet and prepare for play
+2. Button object setup event listener for control music play and pause
+3. Handler object update the progress bar by implement Runningable object
