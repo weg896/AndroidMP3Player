@@ -1,6 +1,7 @@
 package com.jerry.mp.mp3player;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -27,14 +28,16 @@ public class MP3Activity extends AppCompatActivity {
     SeekBar progressingBar;
 
     // music player
-    MediaPlayer mediaPlayer;
+    //MediaPlayer mediaPlayer;
     MP3Service mp3Service;
     String sampleMP3URL = "http://www.stephaniequinn.com/Music/Allegro%20from%20Duet%20in%20C%20Major.mp3";
-    String MP3PlayerTAG = "mp3 player";
+    String TAG = "MP3_PLAYER";
     int musicDuration = 0;
     int musicCurrentPlace = 0;
 
-    Handler progressingBarHandler;
+    //Handler progressingBarHandler;
+
+    ComponentName componentName;
 
     // connect to the service
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -42,6 +45,7 @@ public class MP3Activity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             // get service
             mp3Service = ((MP3Service.MusicBinder)service).getService();
+            Log.d(TAG,"onServiceConnected called");
         }
 
         @Override
@@ -55,9 +59,39 @@ public class MP3Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mp3);
 
-        progressingBarHandler = new Handler();
+        Intent intent = new Intent(this,MP3Service.class);
+
+        componentName = startService(intent);
 
 
+
+        //bindService(intent, musicConnection, BIND_AUTO_CREATE);
+
+        //progressingBarHandler = new Handler();
+
+        screenViewComponentsInit();
+
+        // initial the media player
+
+        musicDuration = mediaPlayer.getDuration();
+
+        progressingBarHandler.post(progressingBarUpdate);
+
+
+    }
+/*
+    private Runnable progressingBarUpdate = new Runnable(){
+        public void run(){
+            musicCurrentPlace = mediaPlayer.getCurrentPosition();
+            progressingBar.setProgress(musicCurrentPlace * progressingBar.getMax() / musicDuration);
+            int temp = musicCurrentPlace * progressingBar.getMax() / musicDuration;
+            Log.d(MP3PlayerTAG, "time: " +temp+" musCp: " + musicCurrentPlace +" musDr: "+musicDuration+" progeMa: "+progressingBar.getMax());
+            progressingBarHandler.post(this);
+        }
+    };
+
+*/
+    private void screenViewComponentsInit(){
         // initial the screen view components
         controlButton = (Button) findViewById(R.id.play_pause_button);
         forward5Button = (Button) findViewById(R.id.forward_5_button);
@@ -65,20 +99,6 @@ public class MP3Activity extends AppCompatActivity {
 
         musicNameTextView = (TextView) findViewById(R.id.music_name_textView);
         progressingBar = (SeekBar) findViewById(R.id.progressing_bar);
-
-        // initial the media player
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try {
-            mediaPlayer.setDataSource(sampleMP3URL);
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            Log.e("IO error", e.getMessage());
-            return;
-        }
-        musicDuration = mediaPlayer.getDuration();
-
-        progressingBarHandler.post(progressingBarUpdate);
 
         // set up listener for screen view components
         controlButton.setOnClickListener(new View.OnClickListener() {
@@ -115,25 +135,14 @@ public class MP3Activity extends AppCompatActivity {
         */
     }
 
-    private Runnable progressingBarUpdate = new Runnable(){
-        public void run(){
-            musicCurrentPlace = mediaPlayer.getCurrentPosition();
-            progressingBar.setProgress(musicCurrentPlace * progressingBar.getMax() / musicDuration);
-            int temp = musicCurrentPlace * progressingBar.getMax() / musicDuration;
-            Log.d(MP3PlayerTAG, "time: " +temp+" musCp: " + musicCurrentPlace +" musDr: "+musicDuration+" progeMa: "+progressingBar.getMax());
-            progressingBarHandler.post(this);
-        }
-    };
-
-
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mp3Service = null;
+        musicConnection.onServiceDisconnected(null);
 
-        mediaPlayer.release();
-        mediaPlayer = null;
+       // mediaPlayer.release();
+       // mediaPlayer = null;
     }
 
     @Override

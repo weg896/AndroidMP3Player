@@ -10,16 +10,20 @@ import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import java.io.IOException;
+
 /**
  * Created by test on 11/26/2015.
  */
 public class MP3Service extends Service implements
         MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
 
-    private static final String ACTION_PLAY = "com.example.action.PLAY";
+    // define mp3 player action for Intent class
+    public static final String ACTION_PLAY = "com.jerry.mp.mp3player.PLAY";
+    public static final String ACTION_PAUSE = "com.jerry.mp.mp3player.PAUSE";
 
     private MediaPlayer mediaPlayer = null;
-    private final String TAG = "MP3Service: ";
+    private final String TAG = "MP3_SERVICE";
     private final IBinder mBinder = new MusicBinder() ;
 
     // for OnErrorListener
@@ -28,10 +32,11 @@ public class MP3Service extends Service implements
 
     public void onCreate(){
         super.onCreate();
-
+        Log.d(TAG,"onCrate called");
     }
 
     public int onStartCommand(Intent intent, int flags, int startId){
+        Log.d(TAG,"onStartCommand called");
         if(intent.getAction().equals(ACTION_PLAY)){
             mediaPlayer = new MediaPlayer();
 
@@ -41,12 +46,22 @@ public class MP3Service extends Service implements
             mediaPlayer.setOnPreparedListener(this);
             mediaPlayer.setOnCompletionListener(this);
             mediaPlayer.setOnErrorListener(this);
+
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            try {
+                mediaPlayer.setDataSource(sampleMP3URL);
+                mediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
+                return 0;
+            }
         }
-        return 0;
+        return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent arg0){
+        Log.d(TAG,"onStartCommand called");
         return null;
     }
 
@@ -83,6 +98,7 @@ public class MP3Service extends Service implements
     }
 
     public void onPrepared(MediaPlayer mp){
+        Log.d(TAG,"onPrepared called");
         mp.start();
     }
 
@@ -94,5 +110,23 @@ public class MP3Service extends Service implements
         MP3Service getService(){
             return MP3Service.this;
         }
+    }
+
+
+    public boolean isPlaying(){
+        return mediaPlayer.isPlaying();
+    }
+
+    ///////////////////////////////////////////
+    public void startMusic(){
+        mediaPlayer.start();
+    }
+
+    public void pauseMusic(){
+        mediaPlayer.pause();
+    }
+
+    public void stopMusic(){
+        mediaPlayer.stop();
     }
 }
