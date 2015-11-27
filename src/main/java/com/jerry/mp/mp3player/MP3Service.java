@@ -49,7 +49,7 @@ public class MP3Service extends Service implements
 
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
-                mediaPlayer.setDataSource(sampleMP3URL);
+                mediaPlayer.setDataSource("sampleMP3URL");
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
@@ -62,7 +62,9 @@ public class MP3Service extends Service implements
     @Override
     public IBinder onBind(Intent arg0){
         Log.d(TAG,"onStartCommand called");
-        return null;
+        // allow other component bind to this service
+        // so return a binder object,
+        return mBinder;
     }
 
 

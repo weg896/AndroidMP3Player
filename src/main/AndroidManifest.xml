@@ -17,8 +17,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".MP3Service">
-        </service>
+        <service android:name=".MP3Service"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
