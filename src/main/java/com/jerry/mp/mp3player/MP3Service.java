@@ -5,8 +5,12 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.os.PowerManager;
+import android.os.Process;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -15,16 +19,21 @@ import java.io.IOException;
 /**
  * Created by test on 11/26/2015.
  */
-public class MP3Service extends Service implements
-        MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
+public class MP3Service extends Service {
 
     // define mp3 player action for Intent class
     public static final String ACTION_PLAY = "com.jerry.mp.mp3player.PLAY";
     public static final String ACTION_PAUSE = "com.jerry.mp.mp3player.PAUSE";
+    private static final String TAG = "MP3_SERVICE";
 
-    private static MediaPlayer mediaPlayer = null;
-    private final String TAG = "MP3_SERVICE";
-    private final IBinder mBinder = new MusicBinder() ;
+
+    private final IBinder musicBinder = new MusicBinder() ;
+
+
+    private Thread mp3Thread;
+
+    private Looper serviceLooper;
+    private ServiceHandler serviceHandler;
 
     // for OnErrorListener
     private String messageWhat = "";
@@ -32,81 +41,60 @@ public class MP3Service extends Service implements
 
     public void onCreate(){
         super.onCreate();
+        mp3Thread= new Thread(,"mp3Thread");
+
+        mp3Thread.start();
+        serviceLooper = thread.getLooper();
+        serviceHandler = new ServiceHandler(serviceLooper);
+
         mediaPlayerInit();
         Log.d(TAG,"onCrate called");
     }
 
     public int onStartCommand(Intent intent, int flags, int startId){
-        Log.d(TAG,"onStartCommand called");
+        Log.d(TAG, "onStartCommand called");
+
         return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent arg0) {
-        Log.d(TAG,"onBind called");
+        Log.d(TAG, "onBind called");
+
+        Message msg = serviceHandler.obtainMessage();
+        serviceHandler.sendMessage(msg);
 
         // allow other component bind to this service
         // so return a binder object,
-        return mBinder;
+        return musicBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        // All clients have unbound with unbindService()
+        return true;
+    }
+    @Override
+    public void onRebind(Intent intent) {
+        // A client is binding to the service with bindService(),
+        // after onUnbind() has already been called
     }
 
 
     private void mediaPlayerInit(){
         if(mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
-            //set player properties
-            //mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnPreparedListener(this);
-            mediaPlayer.setOnCompletionListener(this);
-            mediaPlayer.setOnErrorListener(this);
+
         }
     }
+
+
+
+
 
 
     //////////////////////////////////////////////////////////////
-    // MediaPlayer interface
-    public boolean onError(MediaPlayer mp,int what, int extra){
-
-        switch(what) {
-            case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-                messageWhat = "MEDIA_ERROR_UNKNOWN.";
-                break;
-            case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                messageWhat = "MEDIA_ERROR_SERVER_DIED.";
-                break;
-        }
-
-        switch(extra){
-            case MediaPlayer.MEDIA_ERROR_IO:
-                messageExtra = "MEDIA_ERROR_IO.";
-                break;
-            case MediaPlayer.MEDIA_ERROR_MALFORMED:
-                messageExtra = "MEDIA_ERROR_MALFORMED.";
-                break;
-            case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
-                messageExtra = "MEDIA_ERROR_UNSUPPORTED.";
-                break;
-            case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
-                messageExtra = "MEDIA_ERROR_TIMED_OUT.";
-                break;
-            default:
-                messageExtra = "maybe MEDIA_ERROR_SYSTEM.(low level)";
-        }
-        Log.e(TAG,messageWhat+" "+messageExtra);
-        return false;
-    }
-
-    public void onPrepared(MediaPlayer mp){
-        Log.d(TAG,"onPrepared called");
-        mp.start();
-    }
-
-    public void onCompletion(MediaPlayer mp){
-        // TODO:
-    }
-
-
+    // inner class space
 
     public class MusicBinder extends Binder {
         MP3Service getService(){
@@ -114,10 +102,34 @@ public class MP3Service extends Service implements
         }
     }
 
+    // Handler that receives messages from the thread
+    private final class ServiceHandler extends Handler {
+        public ServiceHandler(Looper looper) {
+            super(looper);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            Log.i(TAG, "Inside handle Message");
 
-    public boolean isPlaying(){
-        return mediaPlayer.isPlaying();
+            while (true) {
+                synchronized (this) {
+                    try {
+                        wait(50);
+
+                        switch (msg.arg1){
+                            case 0:
+                                break;
+                            default:
+                                ;
+                        }
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        }
     }
+
+
 
     ///////////////////////////////////////////
 
@@ -130,6 +142,10 @@ public class MP3Service extends Service implements
         }
     }
 
+
+    public boolean isPlaying(){
+        return mediaPlayer.isPlaying();
+    }
 
     public void startMusic(){
         mediaPlayer.start();
