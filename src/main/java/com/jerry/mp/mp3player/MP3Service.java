@@ -22,7 +22,7 @@ public class MP3Service extends Service implements
     public static final String ACTION_PLAY = "com.jerry.mp.mp3player.PLAY";
     public static final String ACTION_PAUSE = "com.jerry.mp.mp3player.PAUSE";
 
-    private MediaPlayer mediaPlayer = null;
+    private static MediaPlayer mediaPlayer = null;
     private final String TAG = "MP3_SERVICE";
     private final IBinder mBinder = new MusicBinder() ;
 
@@ -32,42 +32,40 @@ public class MP3Service extends Service implements
 
     public void onCreate(){
         super.onCreate();
+        mediaPlayerInit();
         Log.d(TAG,"onCrate called");
     }
 
     public int onStartCommand(Intent intent, int flags, int startId){
         Log.d(TAG,"onStartCommand called");
-        if(intent.getAction().equals(ACTION_PLAY)){
-            mediaPlayer = new MediaPlayer();
-
-            //set player properties
-            mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnPreparedListener(this);
-            mediaPlayer.setOnCompletionListener(this);
-            mediaPlayer.setOnErrorListener(this);
-
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            try {
-                mediaPlayer.setDataSource("sampleMP3URL");
-                mediaPlayer.prepareAsync();
-            } catch (IOException e) {
-                Log.e(TAG, e.getMessage());
-                return 0;
-            }
-        }
         return START_STICKY;
     }
 
     @Override
-    public IBinder onBind(Intent arg0){
-        Log.d(TAG,"onStartCommand called");
+    public IBinder onBind(Intent arg0) {
+        Log.d(TAG,"onBind called");
+
         // allow other component bind to this service
         // so return a binder object,
         return mBinder;
     }
 
 
+    private void mediaPlayerInit(){
+        if(mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+            //set player properties
+            //mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnPreparedListener(this);
+            mediaPlayer.setOnCompletionListener(this);
+            mediaPlayer.setOnErrorListener(this);
+        }
+    }
+
+
+    //////////////////////////////////////////////////////////////
+    // MediaPlayer interface
     public boolean onError(MediaPlayer mp,int what, int extra){
 
         switch(what) {
@@ -108,6 +106,8 @@ public class MP3Service extends Service implements
         // TODO:
     }
 
+
+
     public class MusicBinder extends Binder {
         MP3Service getService(){
             return MP3Service.this;
@@ -120,6 +120,17 @@ public class MP3Service extends Service implements
     }
 
     ///////////////////////////////////////////
+
+    public void musicPlayThis(String url){
+        try {
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+
     public void startMusic(){
         mediaPlayer.start();
     }

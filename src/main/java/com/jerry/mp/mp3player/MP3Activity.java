@@ -60,12 +60,8 @@ public class MP3Activity extends AppCompatActivity {
         setContentView(R.layout.activity_mp3);
 
         Intent intent = new Intent(this,MP3Service.class);
+        bindService(intent, musicConnection, BIND_AUTO_CREATE);
 
-        componentName = startService(intent);
-
-
-
-        //bindService(intent, musicConnection, BIND_AUTO_CREATE);
 
         //progressingBarHandler = new Handler();
 
@@ -73,9 +69,9 @@ public class MP3Activity extends AppCompatActivity {
 
         // initial the media player
 
-        musicDuration = mediaPlayer.getDuration();
+       // musicDuration = mediaPlayer.getDuration();
 
-        progressingBarHandler.post(progressingBarUpdate);
+       // progressingBarHandler.post(progressingBarUpdate);
 
 
     }
@@ -104,12 +100,16 @@ public class MP3Activity extends AppCompatActivity {
         controlButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mediaPlayer.isPlaying()) { // currently playing music, stop it
+
+
+
+                if (mp3Service.isPlaying()) { // currently playing music, stop it
                     Toast.makeText(getApplicationContext(), "Pause music", Toast.LENGTH_SHORT).show();
-                    mediaPlayer.pause();
+                    mp3Service.pauseMusic();
                 } else { // currently no music played, start it
                     Toast.makeText(getApplicationContext(), "Play music", Toast.LENGTH_SHORT).show();
-                    mediaPlayer.start();
+                    mp3Service.musicPlayThis(sampleMP3URL);
+                    mp3Service.startMusic();
                 }
             }
         });
@@ -138,8 +138,8 @@ public class MP3Activity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        unbindService(musicConnection);
         super.onDestroy();
-        musicConnection.onServiceDisconnected(null);
 
        // mediaPlayer.release();
        // mediaPlayer = null;
@@ -148,12 +148,10 @@ public class MP3Activity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
     }
 }
