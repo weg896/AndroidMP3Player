@@ -72,6 +72,19 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     }
 
 
+    private class MP3Runnable implements Runnable{
+        public void run(){
+            mediaPlayer = new MediaPlayer();
+            //set player properties
+            //mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnPreparedListener(MP3Service.this);
+            mediaPlayer.setOnCompletionListener(MP3Service.this);
+            mediaPlayer.setOnErrorListener(MP3Service.this);
+        }
+    }
+
+
     private void mediaPlayerInit(){
 
 
