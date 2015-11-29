@@ -42,17 +42,17 @@ public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, Media
             return;
         }
         mp3Player.start();
-/*
+
         while(true){
             try {
-                wait();
+                wait(20);
                 Log.d(TAG,"music playing");
             }catch(InterruptedException e){
                 Log.e(TAG,e.getMessage());
                 return;
             }
 
-        }*/
+        }
     }
 
     //////////////////////////////////////////////////////////////
