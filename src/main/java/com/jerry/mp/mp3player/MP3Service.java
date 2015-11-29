@@ -15,20 +15,16 @@ import java.io.IOException;
 /**
  * Created by test on 11/26/2015.
  */
-public class MP3Service extends Service implements
-        MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
+public class MP3Service extends Service {
 
     // define mp3 player action for Intent class
     public static final String ACTION_PLAY = "com.jerry.mp.mp3player.PLAY";
     public static final String ACTION_PAUSE = "com.jerry.mp.mp3player.PAUSE";
 
-    private static MediaPlayer mediaPlayer = null;
     private final String TAG = "MP3_SERVICE";
     private final IBinder mBinder = new MusicBinder() ;
 
-    // for OnErrorListener
-    private String messageWhat = "";
-    private String messageExtra = "";
+    private Thread mp3Thread;
 
     public void onCreate(){
         super.onCreate();
@@ -37,7 +33,7 @@ public class MP3Service extends Service implements
     }
 
     public int onStartCommand(Intent intent, int flags, int startId){
-        Log.d(TAG,"onStartCommand called");
+        Log.d(TAG, "onStartCommand called");
         return START_STICKY;
     }
 
@@ -50,75 +46,10 @@ public class MP3Service extends Service implements
         return mBinder;
     }
 
-
-    private class MP3Runnable implements Runnable{
-        public void run(){
-            mediaPlayer = new MediaPlayer();
-            //set player properties
-            //mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnPreparedListener(MP3Service.this);
-            mediaPlayer.setOnCompletionListener(MP3Service.this);
-            mediaPlayer.setOnErrorListener(MP3Service.this);
-        }
-    }
-
-
     private void mediaPlayerInit(){
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            //set player properties
-            //mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnPreparedListener(this);
-            mediaPlayer.setOnCompletionListener(this);
-            mediaPlayer.setOnErrorListener(this);
-        }
+        mp3Thread = new Thread(new MP3Runnable("http://www.stephaniequinn.com/Music/Allegro%20from%20Duet%20in%20C%20Major.mp3"));
+        mp3Thread.start();
     }
-
-
-    //////////////////////////////////////////////////////////////
-    // MediaPlayer interface
-    public boolean onError(MediaPlayer mp,int what, int extra){
-
-        switch(what) {
-            case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-                messageWhat = "MEDIA_ERROR_UNKNOWN.";
-                break;
-            case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                messageWhat = "MEDIA_ERROR_SERVER_DIED.";
-                break;
-        }
-
-        switch(extra){
-            case MediaPlayer.MEDIA_ERROR_IO:
-                messageExtra = "MEDIA_ERROR_IO.";
-                break;
-            case MediaPlayer.MEDIA_ERROR_MALFORMED:
-                messageExtra = "MEDIA_ERROR_MALFORMED.";
-                break;
-            case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
-                messageExtra = "MEDIA_ERROR_UNSUPPORTED.";
-                break;
-            case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
-                messageExtra = "MEDIA_ERROR_TIMED_OUT.";
-                break;
-            default:
-                messageExtra = "maybe MEDIA_ERROR_SYSTEM.(low level)";
-        }
-        Log.e(TAG,messageWhat+" "+messageExtra);
-        return false;
-    }
-
-    public void onPrepared(MediaPlayer mp){
-        Log.d(TAG,"onPrepared called");
-        mp.start();
-    }
-
-    public void onCompletion(MediaPlayer mp){
-        // TODO:
-    }
-
 
 
     public class MusicBinder extends Binder {
@@ -129,30 +60,31 @@ public class MP3Service extends Service implements
 
 
     public boolean isPlaying(){
-        return mediaPlayer.isPlaying();
+        //return mediaPlayer.isPlaying();
+        return false;
     }
 
     ///////////////////////////////////////////
 
     public void musicPlayThis(String url){
-        try {
+        /*try {
             mediaPlayer.setDataSource(url);
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
-        }
+        }*/
     }
 
 
     public void startMusic(){
-        mediaPlayer.start();
+        //mediaPlayer.start();
     }
 
     public void pauseMusic(){
-        mediaPlayer.pause();
+        //mediaPlayer.pause();
     }
 
     public void stopMusic(){
-        mediaPlayer.stop();
+        //mediaPlayer.stop();
     }
 }
