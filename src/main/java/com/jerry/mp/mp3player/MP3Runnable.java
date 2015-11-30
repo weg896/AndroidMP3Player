@@ -27,7 +27,7 @@ public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, Media
     //////////////////////////////////////////////////////////////
     // MediaPlayer interface
     public boolean onError(MediaPlayer mp,int what, int extra){
-
+/*
         switch(what) {
             case MediaPlayer.MEDIA_ERROR_UNKNOWN:
                 messageWhat = "MEDIA_ERROR_UNKNOWN.";
@@ -53,12 +53,12 @@ public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, Media
             default:
                 messageExtra = "maybe MEDIA_ERROR_SYSTEM.(low level)";
         }
-        Log.e(TAG, messageWhat + " " + messageExtra);
+        Log.e(TAG, messageWhat + " " + messageExtra);*/
         return false;
     }
 
     public void onPrepared(MediaPlayer mp){
-        Log.d(TAG,"onPrepared called");
+        //Log.d(TAG,"onPrepared called");
         mp.start();
     }
 

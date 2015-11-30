@@ -41,10 +41,10 @@ public class MP3Service extends Service {
 
     public void onCreate(){
         super.onCreate();
-        mp3Thread= new Thread(,"mp3Thread");
+        mp3Thread= new Thread("mp3Thread");
 
         mp3Thread.start();
-        serviceLooper = thread.getLooper();
+        serviceLooper = mp3Thread.getLooper();
         serviceHandler = new ServiceHandler(serviceLooper);
 
         mediaPlayerInit();
