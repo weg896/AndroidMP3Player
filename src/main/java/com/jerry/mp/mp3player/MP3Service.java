@@ -23,24 +23,31 @@ import java.net.URISyntaxException;
 /**
  * Created by test on 11/26/2015.
  */
+<<<<<<< ace5e16118794f641052c17d2d2b658732ed1093
 public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
         MP3Activity.{
+=======
+public class MP3Service extends Service {
+>>>>>>> just for save work, try to new a thread to handle the mediaPlayer object
 
     // define mp3 player action for Intent class
     public static final String ACTION_PLAY = "com.jerry.mp.mp3player.PLAY";
     public static final String ACTION_PAUSE = "com.jerry.mp.mp3player.PAUSE";
     private static final String TAG = "MP3_SERVICE";
 
+<<<<<<< ace5e16118794f641052c17d2d2b658732ed1093
     private final IBinder musicBinder = new MusicBinder() ;
     private final MediaPlayer mp3Player = new MediaPlayer();
     private int duration = -1;
 
     private String url=null;
+=======
+    private final String TAG = "MP3_SERVICE";
+    private final IBinder mBinder = new MusicBinder() ;
+>>>>>>> just for save work, try to new a thread to handle the mediaPlayer object
 
-    // for OnErrorListener
-    private String messageWhat = "";
-    private String messageExtra = "";
+    private Thread mp3Thread;
 
     public void onCreate(){
         super.onCreate();
@@ -50,7 +57,10 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public int onStartCommand(Intent intent, int flags, int startId){
         Log.d(TAG, "onStartCommand called");
+<<<<<<< ace5e16118794f641052c17d2d2b658732ed1093
 
+=======
+>>>>>>> just for save work, try to new a thread to handle the mediaPlayer object
         return START_STICKY;
     }
 
@@ -71,21 +81,8 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         // after onUnbind() has already been called
     }
 
-
-    private class MP3Runnable implements Runnable{
-        public void run(){
-            mediaPlayer = new MediaPlayer();
-            //set player properties
-            //mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnPreparedListener(MP3Service.this);
-            mediaPlayer.setOnCompletionListener(MP3Service.this);
-            mediaPlayer.setOnErrorListener(MP3Service.this);
-        }
-    }
-
-
     private void mediaPlayerInit(){
+<<<<<<< ace5e16118794f641052c17d2d2b658732ed1093
 
 
         mp3Player.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -157,6 +154,24 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         for(int i=0;i<file.list().length;i++) {
             Log.d(TAG, "~~~~file exist~~; " + file.list()[i]);
         }
+=======
+        mp3Thread = new Thread(new MP3Runnable("http://www.stephaniequinn.com/Music/Allegro%20from%20Duet%20in%20C%20Major.mp3"));
+        mp3Thread.start();
+    }
+
+
+    public class MusicBinder extends Binder {
+        MP3Service getService(){
+            return MP3Service.this;
+        }
+    }
+
+
+    public boolean isPlaying(){
+        //return mediaPlayer.isPlaying();
+        return false;
+    }
+>>>>>>> just for save work, try to new a thread to handle the mediaPlayer object
 
         if(file.exists()){
             Log.d(TAG, "file exist; "+url);
@@ -164,12 +179,19 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
             Log.d(TAG, "not exist; "+url);
         }*/
 
+<<<<<<< ace5e16118794f641052c17d2d2b658732ed1093
         try {
             mp3Player.setDataSource(url);
             mp3Player.prepareAsync();
+=======
+    public void musicPlayThis(String url){
+        /*try {
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepareAsync();
+>>>>>>> just for save work, try to new a thread to handle the mediaPlayer object
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
-        }
+        }*/
     }
 
 
@@ -183,6 +205,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     }
 
     public void startMusic(){
+<<<<<<< ace5e16118794f641052c17d2d2b658732ed1093
         mp3Player.start();
     }
 
@@ -197,6 +220,17 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public int musicDuration(){
         return duration;
+=======
+        //mediaPlayer.start();
+    }
+
+    public void pauseMusic(){
+        //mediaPlayer.pause();
+    }
+
+    public void stopMusic(){
+        //mediaPlayer.stop();
+>>>>>>> just for save work, try to new a thread to handle the mediaPlayer object
     }
 
     public int musicCurrentPosition(){
