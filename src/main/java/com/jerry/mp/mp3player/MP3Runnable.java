@@ -45,7 +45,7 @@ public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, Media
 
         while(true){
             try {
-                wait(20);
+                Thread.sleep(100);
                 Log.d(TAG,"music playing");
             }catch(InterruptedException e){
                 Log.e(TAG,e.getMessage());
