@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
@@ -16,26 +17,27 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 
 public class MP3Activity extends AppCompatActivity {
 
     // screen view component
-    Button controlButton; // start and stop
-    Button forward5Button; // forward 5 second
-    Button backward5Button; // backward 5 second
-    TextView musicNameTextView; // show the music's name
-    SeekBar progressingBar;
+    private Button controlButton; // start and stop
+    private Button forward5Button; // forward 5 second
+    private Button backward5Button; // backward 5 second
+    private TextView musicNameTextView; // show the music's name
+    private SeekBar progressingBar;
 
     // music player
-    //MediaPlayer mediaPlayer;
-    MP3Service mp3Service;
-    String sampleMP3URL = "http://www.stephaniequinn.com/Music/Allegro%20from%20Duet%20in%20C%20Major.mp3";
-    String TAG = "MP3_PLAYER";
-    int musicDuration = 0;
-    int musicCurrentPlace = 0;
 
-    //Handler progressingBarHandler;
+    private Handler progressingBarHandler = null;
+    private int progressingPosition=0;
+    //MediaPlayer mediaPlayer;
+    private MP3Service mp3Service;
+    private String sampleMP3URL = "/sdcard/64.mp3";
+    private String TAG = "MP3_PLAYER";
+
 
     ComponentName componentName;
 
@@ -45,6 +47,8 @@ public class MP3Activity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             // get service
             mp3Service = ((MP3Service.MusicBinder)service).getService();
+            // set music
+            mp3Service.musicPlayThis(sampleMP3URL);
             Log.d(TAG,"onServiceConnected called");
         }
 
@@ -58,12 +62,14 @@ public class MP3Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mp3);
-
+        Log.d(TAG, "onCreate--before bind");
         Intent intent = new Intent(this,MP3Service.class);
         bindService(intent, musicConnection, BIND_AUTO_CREATE);
 
+        //sampleMP3URL = Environment.getExternalStorageDirectory().toString()+"/Music/64.mp3";
 
-        //progressingBarHandler = new Handler();
+        progressingBarHandler = new Handler();
+        progressingBarHandler.postDelayed(progressingBarUpdate,100);
 
         screenViewComponentsInit();
 
@@ -71,20 +77,12 @@ public class MP3Activity extends AppCompatActivity {
 
        // musicDuration = mediaPlayer.getDuration();
 
-       // progressingBarHandler.post(progressingBarUpdate);
-
+       //
+        Log.d(TAG, "onCreate--after bind");
 
     }
 /*
-    private Runnable progressingBarUpdate = new Runnable(){
-        public void run(){
-            musicCurrentPlace = mediaPlayer.getCurrentPosition();
-            progressingBar.setProgress(musicCurrentPlace * progressingBar.getMax() / musicDuration);
-            int temp = musicCurrentPlace * progressingBar.getMax() / musicDuration;
-            Log.d(MP3PlayerTAG, "time: " +temp+" musCp: " + musicCurrentPlace +" musDr: "+musicDuration+" progeMa: "+progressingBar.getMax());
-            progressingBarHandler.post(this);
-        }
-    };
+
 
 */
     private void screenViewComponentsInit(){
@@ -102,13 +100,12 @@ public class MP3Activity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-
                 if (mp3Service.isPlaying()) { // currently playing music, stop it
                     Toast.makeText(getApplicationContext(), "Pause music", Toast.LENGTH_SHORT).show();
                     mp3Service.pauseMusic();
                 } else { // currently no music played, start it
                     Toast.makeText(getApplicationContext(), "Play music", Toast.LENGTH_SHORT).show();
-                    mp3Service.musicPlayThis(sampleMP3URL);
+
                     mp3Service.startMusic();
                 }
             }
@@ -148,10 +145,27 @@ public class MP3Activity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart");
     }
 
     @Override
     public void onStop() {
         super.onStop();
     }
+
+
+    ////////////////////////////////////////
+
+
+    // update duration
+    private Runnable progressingBarUpdate = new Runnable(){
+        public void run(){
+            if(mp3Service != null) {
+                progressingPosition = mp3Service.musicCurrentPosition() * progressingBar.getMax() / mp3Service.musicDuration();
+                progressingBar.setProgress(progressingPosition);
+                //Log.d(TAG, "time: " + progressingPosition + " musCp: " + mp3Service.musicCurrentPosition() + " musDr: " + mp3Service.musicDuration() + " progeMa: " + progressingBar.getMax());
+            }
+            progressingBarHandler.postDelayed(this,100);
+        }
+    };
 }
