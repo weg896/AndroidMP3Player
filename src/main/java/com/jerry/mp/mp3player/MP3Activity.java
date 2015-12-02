@@ -27,15 +27,15 @@ public class MP3Activity extends AppCompatActivity {
     private Button forward5Button; // forward 5 second
     private Button backward5Button; // backward 5 second
     private TextView musicNameTextView; // show the music's name
-    private SeekBar progressingBar;
+    private SeekBar seekBar;
 
     // music player
 
-    private Handler progressingBarHandler = null;
-    private int progressingPosition=0;
+    private Handler seekBarHandler = null;
+    private boolean seekFromUser=false;
     //MediaPlayer mediaPlayer;
     private MP3Service mp3Service;
-    private String sampleMP3URL = "/sdcard/64.mp3";
+    private String sampleMP3URL = "/sdcard/gate.ogg";
     private String TAG = "MP3_PLAYER";
 
 
@@ -49,6 +49,7 @@ public class MP3Activity extends AppCompatActivity {
             mp3Service = ((MP3Service.MusicBinder)service).getService();
             // set music
             mp3Service.musicPlayThis(sampleMP3URL);
+
             Log.d(TAG,"onServiceConnected called");
         }
 
@@ -57,6 +58,12 @@ public class MP3Activity extends AppCompatActivity {
             mp3Service = null;
         }
     };
+
+    public setListener(MP3FilesAbstract context);{
+
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +75,8 @@ public class MP3Activity extends AppCompatActivity {
 
         //sampleMP3URL = Environment.getExternalStorageDirectory().toString()+"/Music/64.mp3";
 
-        progressingBarHandler = new Handler();
-        progressingBarHandler.postDelayed(progressingBarUpdate,100);
+        seekBarHandler = new Handler();
+        seekBarHandler.postDelayed(seekBarUpdate,100);
 
         screenViewComponentsInit();
 
@@ -92,22 +99,43 @@ public class MP3Activity extends AppCompatActivity {
         backward5Button = (Button) findViewById(R.id.backward_5_button);
 
         musicNameTextView = (TextView) findViewById(R.id.music_name_textView);
-        progressingBar = (SeekBar) findViewById(R.id.progressing_bar);
+        seekBar = (SeekBar) findViewById(R.id.progressing_bar);
 
         // set up listener for screen view components
         controlButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 if (mp3Service.isPlaying()) { // currently playing music, stop it
                     Toast.makeText(getApplicationContext(), "Pause music", Toast.LENGTH_SHORT).show();
                     mp3Service.pauseMusic();
                 } else { // currently no music played, start it
                     Toast.makeText(getApplicationContext(), "Play music", Toast.LENGTH_SHORT).show();
-
                     mp3Service.startMusic();
                 }
+            }
+        });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+            int progressChanged = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser){
+                if(fromuser) {
+                    seekFromUser = true;
+                    progressChanged = progress;
+                    Log.d(TAG, "progress changing " + progress);
+                }
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar){
+                Log.d(TAG, "progress start touch ");
+                seekFromUser = false;
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar){
+                Log.d(TAG, "progress stop touch ");
+                mp3Service.setMusicCurrentPosition(progressChanged);
+                seekBar.setProgress(progressChanged);
+                seekFromUser = false;
             }
         });
 
@@ -158,14 +186,21 @@ public class MP3Activity extends AppCompatActivity {
 
 
     // update duration
-    private Runnable progressingBarUpdate = new Runnable(){
+    private Runnable seekBarUpdate = new Runnable(){
         public void run(){
-            if(mp3Service != null) {
-                progressingPosition = mp3Service.musicCurrentPosition() * progressingBar.getMax() / mp3Service.musicDuration();
-                progressingBar.setProgress(progressingPosition);
+            if(mp3Service != null && !seekFromUser) {
+                int seekPosition = mp3Service.musicCurrentPosition() / mp3Service.musicDuration();
+                seekBar.setProgress(seekPosition);
                 //Log.d(TAG, "time: " + progressingPosition + " musCp: " + mp3Service.musicCurrentPosition() + " musDr: " + mp3Service.musicDuration() + " progeMa: " + progressingBar.getMax());
             }
-            progressingBarHandler.postDelayed(this,100);
+            seekBarHandler.postDelayed(this,100);
         }
     };
+
+    public interface MP3FilesAbstract {
+
+        public void setListener(MP3FilesAbstract context);
+
+        public void onListener();
+    }
 }

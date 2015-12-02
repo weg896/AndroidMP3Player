@@ -1,6 +1,7 @@
 package com.jerry.mp.mp3player;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -17,11 +18,14 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Created by test on 11/26/2015.
  */
-public class MP3Service extends Service implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
+public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
+        MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
+        MP3Activity.{
 
     // define mp3 player action for Intent class
     public static final String ACTION_PLAY = "com.jerry.mp.mp3player.PLAY";
@@ -30,8 +34,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener, 
 
     private final IBinder musicBinder = new MusicBinder() ;
     private final MediaPlayer mp3Player = new MediaPlayer();
-
-
+    private int duration = -1;
 
     private String url=null;
 
@@ -125,6 +128,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener, 
 
     public void onPrepared(MediaPlayer mp){
         //Log.d(TAG,"onPrepared called");
+        duration = mp.getDuration();
         //mp.start();
     }
 
@@ -136,16 +140,16 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener, 
 
     public void musicPlayThis(String url){
 
-        File file = new File(url);
-        /*for(int i=0;i<file.list().length;i++) {
+        /*File file = new File(url);
+        for(int i=0;i<file.list().length;i++) {
             Log.d(TAG, "~~~~file exist~~; " + file.list()[i]);
-        }*/
+        }
 
         if(file.exists()){
             Log.d(TAG, "file exist; "+url);
         }else{
             Log.d(TAG, "not exist; "+url);
-        }
+        }*/
 
         try {
             mp3Player.setDataSource(url);
@@ -179,10 +183,16 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener, 
     }
 
     public int musicDuration(){
-        return mp3Player.getDuration();
+        return duration;
     }
 
     public int musicCurrentPosition(){
         return mp3Player.getCurrentPosition();
     }
+
+    public void setMusicCurrentPosition(int position){
+        mp3Player.seekTo(position);
+    }
+
+
 }
