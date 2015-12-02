@@ -43,12 +43,46 @@ public class MP3Service extends Service implements
 
     @Override
     public IBinder onBind(Intent arg0) {
-        Log.d(TAG,"onBind called");
+        Log.d(TAG, "onBind called");
+
+        Thread thread = new Thread(new Runnable(){
+           public void run(){
+               MediaPlayer mediaPlayer = new MediaPlayer();
+               //set player properties
+               //mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+               mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+               mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                   @Override
+                   public void onPrepared(MediaPlayer mediaPlayer) {
+                       Log.d(TAG, "onPrepared called");
+                       mediaPlayer.start();
+                   }
+               });
+               mediaPlayer.setOnCompletionListener(MP3Service.this);
+               mediaPlayer.setOnErrorListener(MP3Service.this);
+               try{
+                   mediaPlayer.setDataSource("/sdcard/64.mp3");
+                   mediaPlayer.prepareAsync();
+               }catch (IOException e) {
+                   Log.e(TAG, e.getMessage());
+               }
+
+               while(true){
+                   try {
+                       Thread.sleep(100);
+                   }catch (Exception e){}
+                   Log.d(TAG, "after sleep");
+               }
+           }
+        });
+        thread.start();
 
         // allow other component bind to this service
         // so return a binder object,
         return mBinder;
     }
+
+
 
 
     private void mediaPlayerInit(){
