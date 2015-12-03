@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -49,6 +50,11 @@ public class MP3Service extends Service {
     }
 
     private void mediaPlayerInit(){
+        if(Looper.myLooper() != Looper.getMainLooper()){
+            Log.d(TAG,"using a new looper");
+        }else{
+            Log.d(TAG,"using a UI looper");
+        }
         mp3Thread = new Thread(new MP3Runnable("/sdcard/64.mp3"));
         mp3Thread.start();
     }

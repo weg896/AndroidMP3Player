@@ -4,6 +4,7 @@ package com.jerry.mp3player;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Looper;
 import android.util.Log;
 
 /**
@@ -29,6 +30,12 @@ public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, Media
 
     public void run(){
         Log.d(TAG,"Thread/runnable start");
+        if(Looper.myLooper() != Looper.getMainLooper()){
+            Log.d(TAG,"using a new looper");
+        }else{
+            Log.d(TAG,"using a UI looper");
+        }
+
         mp3Player = new MediaPlayer();
 
         //set player properties
@@ -45,10 +52,12 @@ public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, Media
             return;
         }
 
+
+
         while(true){
             try {
                 Thread.sleep(1000);
-                Log.d(TAG,"music playing");
+                //Log.d(TAG,"music playing");
             }catch(InterruptedException e){
                 Log.e(TAG,e.getMessage());
                 return;

@@ -7,6 +7,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,6 +46,11 @@ public class MP3Activity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             // get service
             mp3Service = ((MP3Service.MusicBinder)service).getService();
+            if(Looper.myLooper() != Looper.getMainLooper()){
+                Log.d(TAG,"using a new looper");
+            }else{
+                Log.d(TAG,"using a UI looper");
+            }
             Log.d(TAG,"onServiceConnected called");
         }
 
@@ -100,7 +106,6 @@ public class MP3Activity extends AppCompatActivity {
         controlButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
 
                 if (mp3Service.isPlaying()) { // currently playing music, stop it
