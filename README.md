@@ -1,6 +1,11 @@
 # AndroidMP3Player
 
+----------------------------------------------------------------------
 
+ThreadTesting Branch --
+Try to create a new thread to hold a mediaplayer object,
+basic on the test, it seem mediaplayer object has it own thread (or Asynchronize)
+when mediaplayer is in start state (.start()).
 
 
 ----------------------------------------------------------------------
