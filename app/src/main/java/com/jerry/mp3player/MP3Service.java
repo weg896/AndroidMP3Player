@@ -1,6 +1,6 @@
 
 
-package com.jerry.mp.mp3player;
+package com.jerry.mp3player;
 
 import android.app.Service;
 import android.content.Intent;
@@ -30,7 +30,7 @@ public class MP3Service extends Service {
 
     public void onCreate(){
         super.onCreate();
-        mediaPlayerInit();
+
         Log.d(TAG,"onCrate called");
     }
 
@@ -42,14 +42,14 @@ public class MP3Service extends Service {
     @Override
     public IBinder onBind(Intent arg0) {
         Log.d(TAG,"onBind called");
-
+        mediaPlayerInit();
         // allow other component bind to this service
         // so return a binder object,
         return mBinder;
     }
 
     private void mediaPlayerInit(){
-        mp3Thread = new Thread(new MP3Runnable("http://www.stephaniequinn.com/Music/Allegro%20from%20Duet%20in%20C%20Major.mp3"));
+        mp3Thread = new Thread(new MP3Runnable("/sdcard/64.mp3"));
         mp3Thread.start();
     }
 

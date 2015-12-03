@@ -1,6 +1,6 @@
 
 
-package com.jerry.mp.mp3player;
+package com.jerry.mp3player;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -39,15 +39,15 @@ public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, Media
         mp3Player.setOnErrorListener(this);
         try {
             mp3Player.setDataSource(mp3url);
+            mp3Player.prepareAsync();
         }catch(Exception e){
             Log.e(TAG,e.getMessage());
             return;
         }
-        mp3Player.start();
 
         while(true){
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
                 Log.d(TAG,"music playing");
             }catch(InterruptedException e){
                 Log.e(TAG,e.getMessage());

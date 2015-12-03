@@ -1,6 +1,4 @@
-
-
-package com.jerry.mp.mp3player;
+package com.jerry.mp3player;
 
 import android.content.ComponentName;
 import android.content.Intent;
