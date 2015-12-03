@@ -3,9 +3,15 @@
 ----------------------------------------------------------------------
 
 ThreadTesting Branch --
-Try to create a new thread to hold a mediaplayer object,
-basic on the test, it seem mediaplayer object has it own thread (or Asynchronize)
-when mediaplayer is in start state (.start()).
+Try to create a new thread to hold a MediaPlayer object,
+basic on the test, it seem MediaPlayer object has it own thread
+when MediaPlayer is in Start state (.start()).
+
+Read from the source code of MediaPlayer,it get a looper.
+As my understand, if the thread created it and has a looper,
+MediaPlayer object will use it, if doesn't have, use the mainLooper
+
+Then the MediaPlayer can run in a new thread or UI thread.
 
 
 ----------------------------------------------------------------------

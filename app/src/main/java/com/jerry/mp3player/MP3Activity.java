@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,10 +21,10 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
-public class MP3Activity extends AppCompatActivity {
+public class MP3Activity extends AppCompatActivity implements MP3SeekBarInterface {
 
     // screen view component
-    private Button controlButton; // start and stop
+    private ImageButton controlButton; // start and stop
     private Button forward5Button; // forward 5 second
     private Button backward5Button; // backward 5 second
     private TextView musicNameTextView; // show the music's name
@@ -94,7 +95,7 @@ public class MP3Activity extends AppCompatActivity {
 */
     private void screenViewComponentsInit(){
         // initial the screen view components
-        controlButton = (Button) findViewById(R.id.play_pause_button);
+        controlButton = (ImageButton) findViewById(R.id.play_pause_button);
         forward5Button = (Button) findViewById(R.id.forward_5_button);
         backward5Button = (Button) findViewById(R.id.backward_5_button);
 
@@ -139,16 +140,15 @@ public class MP3Activity extends AppCompatActivity {
             }
         });
 
-        /*
+
         forward5Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-
+                mp3Service.setMusicCurrentPosition(seekBar.getMax() / 2);
             }
         });
 
+        /*
         backward5Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,6 +158,10 @@ public class MP3Activity extends AppCompatActivity {
             }
         });
         */
+    }
+
+    public void onDurationPrepared(int duration){
+        seekBar.setMax(duration);
     }
 
 

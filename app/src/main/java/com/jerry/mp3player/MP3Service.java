@@ -36,6 +36,8 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     private int duration = -1;
 
     private String url=null;
+    private MP3SeekBarInterface seekBarInterface;
+
 
     // for OnErrorListener
     private String messageWhat = "";
@@ -49,7 +51,6 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public int onStartCommand(Intent intent, int flags, int startId){
         Log.d(TAG, "onStartCommand called");
-
         return START_STICKY;
     }
 
@@ -190,8 +191,12 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     }
 
     public void setMusicCurrentPosition(int position){
+        Log.d(TAG,"seek to position:"+position);
         mp3Player.seekTo(position);
     }
 
+    public void setSeekBarListener(MP3SeekBarInterface seekBarInterface){
+        this.seekBarInterface = seekBarInterface;
+    }
 
 }
