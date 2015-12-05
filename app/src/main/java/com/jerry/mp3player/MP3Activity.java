@@ -3,9 +3,6 @@ package com.jerry.mp3player;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
@@ -18,10 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
-
-public class MP3Activity extends AppCompatActivity implements MP3SeekBarInterface {
+public class MP3Activity extends AppCompatActivity implements MP3SeekBarListener {
 
     // screen view component
     private ImageButton controlButton; // start and stop
@@ -87,7 +81,6 @@ public class MP3Activity extends AppCompatActivity implements MP3SeekBarInterfac
 
        //
         Log.d(TAG, "onCreate--after bind");
-
     }
 /*
 

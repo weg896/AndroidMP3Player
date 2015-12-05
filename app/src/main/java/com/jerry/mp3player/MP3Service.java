@@ -1,24 +1,14 @@
 package com.jerry.mp3player;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.PowerManager;
-import android.os.Process;
-import android.provider.MediaStore;
 import android.util.Log;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Created by test on 11/26/2015.
@@ -36,7 +26,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     private int duration = -1;
 
     private String url=null;
-    private MP3SeekBarInterface seekBarInterface;
+    private MP3SeekBarListener seekBarInterface;
 
 
     // for OnErrorListener
@@ -195,7 +185,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         mp3Player.seekTo(position);
     }
 
-    public void setSeekBarListener(MP3SeekBarInterface seekBarInterface){
+    public void setSeekBarListener(MP3SeekBarListener seekBarInterface){
         this.seekBarInterface = seekBarInterface;
     }
 
