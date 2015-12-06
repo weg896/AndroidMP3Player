@@ -55,4 +55,13 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="0:00/0:00"
+        android:id="@+id/music_time_textView"
+        android:layout_above="@+id/progressing_bar"
+        android:layout_alignStart="@+id/music_name_textView" />
+
 </RelativeLayout>

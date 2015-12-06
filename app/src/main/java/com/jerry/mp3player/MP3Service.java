@@ -17,8 +17,6 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener{
 
     // define mp3 player action for Intent class
-    public static final String ACTION_PLAY = "com.jerry.mp.mp3player.PLAY";
-    public static final String ACTION_PAUSE = "com.jerry.mp.mp3player.PAUSE";
     private static final String TAG = "MP3_SERVICE";
 
     private final IBinder musicBinder = new MusicBinder() ;
@@ -27,7 +25,6 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     private String url=null;
     private MP3SeekBarListener seekBarInterface;
-
 
     // for OnErrorListener
     private String messageWhat = "";
@@ -52,6 +49,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     @Override
     public boolean onUnbind(Intent intent) {
+        Log.d(TAG, "onUnbind called");
         // All clients have unbound with unbindService()
         return true;
     }
@@ -59,18 +57,15 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     public void onRebind(Intent intent) {
         // A client is binding to the service with bindService(),
         // after onUnbind() has already been called
+        Log.d(TAG, "onRebind called");
     }
 
-
     private void mediaPlayerInit(){
-
-
         mp3Player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mp3Player.setOnPreparedListener(this);
         mp3Player.setOnCompletionListener(this);
         mp3Player.setOnErrorListener(this);
     }
-
 
 
     //////////////////////////////////////////////////////////////
@@ -119,6 +114,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     public void onPrepared(MediaPlayer mp){
         //Log.d(TAG,"onPrepared called");
         duration = mp.getDuration();
+        seekBarInterface.onDurationPrepared(duration);
         //mp.start();
     }
 
@@ -152,7 +148,6 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public void setURL(String url){
         this.url = url;
-
     }
 
     public boolean isPlaying(){

@@ -19,10 +19,20 @@ MediaPlayer object will use it, if doesn't have, use the mainLooper
 
 Then the MediaPlayer can run in a new thread or UI thread.
 
+----------------------------------------------------------------------
+version 0.0.2
+try to put every controlling view to a Fragment,
+let Activity as a container to hold the Fragment
+
+It should use FragmentManager.findFragmentById() 
+rather than call new Fragment()
+
+next version will try multiple Fragments
+so that user can slide the Fragments
 
 ----------------------------------------------------------------------
 
-version 1.0.1:
+version 0.0.1:
 trying to implement a Service,
 basic on google guide, I should new a thread for handle the Service
 to prevent ANR (Application Not Responding).
@@ -35,9 +45,10 @@ then the exist Activity bind to the Service
 
 ----------------------------------------------------------------------
 
-version 1.0.0:
+version 0.0.0:
 a media player only using one Activity and Media classes
-next version will try to implement a Service so that music can play on background
+next version will try to implement a Service 
+so that music can play on background
 
 main idea
 1. Media object get the mp3 stream from internet and prepare for play
