@@ -114,7 +114,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     public void onPrepared(MediaPlayer mp){
         //Log.d(TAG,"onPrepared called");
         duration = mp.getDuration();
-        seekBarInterface.onDurationPrepared(duration);
+
         //mp.start();
     }
 
@@ -168,7 +168,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     }
 
     public int musicDuration(){
-        return duration;
+        return mp3Player.getDuration();
     }
 
     public int musicCurrentPosition(){
@@ -182,6 +182,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public void setSeekBarListener(MP3SeekBarListener seekBarInterface){
         this.seekBarInterface = seekBarInterface;
+        this.seekBarInterface.onDurationPrepared();
     }
 
 }

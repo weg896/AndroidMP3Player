@@ -24,20 +24,20 @@ public class MP3ControlFragment extends Fragment{
     private static final String TAG = "MP3_CONTROL_FRAGMENT";
 
     // screen view component
-    private ImageButton controlButton; // start and stop
-    private Button forward5Button; // forward 5 second
-    private Button backward5Button; // backward 5 second
-    private TextView musicNameTextView; // show the music's name
-    private TextView musicTimeTextView; // show the music's duration and current
-    private SeekBar seekBar;
+    private ImageButton controlButton = null; // start and stop
+    private Button forward5Button = null; // forward 5 second
+    private Button backward5Button = null; // backward 5 second
+    private TextView musicNameTextView = null; // show the music's name
+    private TextView musicTimeTextView = null; // show the music's duration and current
+    private SeekBar seekBar = null;
     private String currentMusicDuration = "0:00";
 
-    private MP3Service mp3Service;
+    private MP3Service mp3Service = null;
 
     private Handler seekBarHandler = null;
     private boolean seekFromUser = false;
 
-    private View controlView;
+    private View controlView = null;
 
     // implement view component here
     @Override
@@ -52,7 +52,7 @@ public class MP3ControlFragment extends Fragment{
         musicTimeTextView = (TextView) controlView.findViewById(R.id.music_time_textView);
         seekBar = (SeekBar) controlView.findViewById(R.id.progressing_bar);
 
-        Log.d(TAG,"onCreateView");
+        Log.d(TAG,"onCreateView ");
         return controlView;
     }
 
@@ -68,10 +68,23 @@ public class MP3ControlFragment extends Fragment{
         Log.d(TAG, "onActivityCreated");
     }
 
-    public void setMP3Service(MP3Service mp3Ser){
+    public void setMP3Service(MP3Service mp3Ser) {
         mp3Service = mp3Ser;
+        setViewListener();
+    }
+
+    private void setViewListener(){
+        if(controlView == null){
+            Log.d(TAG, "controlView == null, setViewListener()");
+            return;
+        }else if(mp3Service == null){
+            Log.d(TAG, "mp3service == null, setViewListener()");
+            return;
+        }
+
         mp3Service.setSeekBarListener(new MP3SeekBarListener() {
-            public void onDurationPrepared(int duration) {
+            public void onDurationPrepared() {
+                int duration = mp3Service.musicDuration();
                 seekBar.setMax(duration);
                 currentMusicDuration = String.format("%02d:%02d",
                         TimeUnit.MILLISECONDS.toMinutes(duration),
@@ -90,10 +103,7 @@ public class MP3ControlFragment extends Fragment{
                 musicTimeTextView.setText(timeCur+"/"+currentMusicDuration);
             }
         });
-
-        Log.d(TAG, "setMP3Service");
-
-
+        Log.d(TAG, "setMP3Service ");
 
 
         // set up listener for screen view components
@@ -156,9 +166,20 @@ public class MP3ControlFragment extends Fragment{
     private Runnable seekBarUpdate = new Runnable(){
         public void run(){
             if(mp3Service != null && !seekFromUser) {
+
+                int duration = mp3Service.musicDuration();
+                if(seekBar.getMax() != duration) {
+                    seekBar.setMax(duration);
+                    currentMusicDuration = String.format("%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(duration),
+                            TimeUnit.MILLISECONDS.toSeconds(duration) -
+                                    TimeUnit.MINUTES.toSeconds(
+                                            TimeUnit.MILLISECONDS.toMinutes(duration)
+                                    ));
+                }
+
                 int seekPosition = mp3Service.musicCurrentPosition();
                 seekBar.setProgress(seekPosition);
-
                 String timeCur = String.format("%02d:%02d",
                         TimeUnit.MILLISECONDS.toMinutes(seekPosition),
                         TimeUnit.MILLISECONDS.toSeconds(seekPosition) -
@@ -167,7 +188,7 @@ public class MP3ControlFragment extends Fragment{
                                 ));
 
                 musicTimeTextView.setText(timeCur + "/" + currentMusicDuration);
-                Log.d(TAG, "seekP:"+seekPosition+" musCp: " + mp3Service.musicCurrentPosition() + " musDr: " + mp3Service.musicDuration());
+                //Log.d(TAG, "seekP:"+seekPosition+" musCp: " + mp3Service.musicCurrentPosition() + " musDr: " + mp3Service.musicDuration());
             }
             seekBarHandler.postDelayed(this,100);
         }
@@ -212,6 +233,7 @@ public class MP3ControlFragment extends Fragment{
     @Override
     public void onResume(){
         super.onResume();
+        setViewListener();
         Log.d(TAG, "onResume");
     }
 
@@ -221,4 +243,11 @@ public class MP3ControlFragment extends Fragment{
         Log.d(TAG, "onPause");
     }
 
+    public boolean isViewCreated(){
+        return controlView != null;
+    }
+
+    public boolean isServiceBound(){
+        return mp3Service != null;
+    }
 }

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">mp3player</string>
     <string name="app_version">1.0</string>
+
+    <string name="action_controller">Controller</string>
+    <string name="action_playlist">Play List</string>
 </resources>

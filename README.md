@@ -18,6 +18,9 @@ As my understand, if the thread created it and has a looper,
 MediaPlayer object will use it, if doesn't have, use the mainLooper
 
 Then the MediaPlayer can run in a new thread or UI thread.
+----------------------------------------------------------------------
+I should create a Fragment for holding the comfiguration state
+by calling setRetainInstance(true); then service can stay alive 
 
 ----------------------------------------------------------------------
 version 0.0.2
