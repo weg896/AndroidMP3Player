@@ -1,6 +1,7 @@
 package com.jerry.mp3player;
 
 import android.app.Fragment;
+import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,8 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +34,11 @@ public class MP3PlayListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         playlistView = inflater.inflate(R.layout.fragment_mp3_playlist, container, false);
+
+        ListView listview = (ListView)playlistView.findViewById(R.id.playlist);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this.getActivity(),android.R.layout.simple_expandable_list_item_1,MP3MusicFileReader.readSDCardMusic());
+
+        listview.setAdapter(arrayAdapter);
 
         Log.d(TAG, "onCreateView");
         return playlistView;

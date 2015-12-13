@@ -21,9 +21,6 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     private final IBinder musicBinder = new MusicBinder() ;
     private final MediaPlayer mp3Player = new MediaPlayer();
-    private int duration = -1;
-
-    private String url=null;
     private MP3SeekBarListener seekBarInterface;
 
     // for OnErrorListener
@@ -113,8 +110,6 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public void onPrepared(MediaPlayer mp){
         //Log.d(TAG,"onPrepared called");
-        duration = mp.getDuration();
-
         //mp.start();
     }
 
@@ -138,16 +133,12 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         }*/
 
         try {
+            mp3Player.reset();
             mp3Player.setDataSource(url);
             mp3Player.prepareAsync();
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
         }
-    }
-
-
-    public void setURL(String url){
-        this.url = url;
     }
 
     public boolean isPlaying(){
