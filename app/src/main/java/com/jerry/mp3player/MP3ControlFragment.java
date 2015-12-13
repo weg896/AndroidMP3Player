@@ -147,7 +147,7 @@ public class MP3ControlFragment extends Fragment{
         forward5Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mp3Service.musicPlayThis("/sdcard/74.mp3");
+                mp3Service.musicPlayThis("/sdcard/74.mp3", true);
             }
         });
 

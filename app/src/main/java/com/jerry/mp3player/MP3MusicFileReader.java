@@ -13,18 +13,31 @@ import java.util.ArrayList;
 public class MP3MusicFileReader {
 
     private final static String TAG = "MP3_Music_File_Reader";
+    private static String sdCardDir = null;
+    private static String[] musicList = null;
 
     public static String[] readSDCardMusic(){
-        String str = Environment.getExternalStorageDirectory().toString();
-        Log.d(TAG, "sdcard dir: " + str);
+        if(sdCardDir == null) {
+            sdCardDir = Environment.getExternalStorageDirectory().toString();
+            Log.d(TAG, "sdcard dir: " + sdCardDir);
+        }
 
-        File file = new File(str);
+        File file = new File(sdCardDir);
 
         if(file.isDirectory()) {
-            return file.list(new MP3MusicFileFilter());
+            musicList = file.list(new MP3MusicFileFilter());
+            return musicList;
         }else{
+            Log.d(TAG, "sd card location is not a directory");
             return null;
         }
+    }
+
+    public static String getSdCardDir(){
+        if(sdCardDir == null) {
+            sdCardDir = Environment.getExternalStorageDirectory().toString();
+        }
+        return sdCardDir;
     }
 
 }

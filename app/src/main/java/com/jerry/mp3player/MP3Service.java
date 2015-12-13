@@ -23,6 +23,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     private final MediaPlayer mp3Player = new MediaPlayer();
     private MP3SeekBarListener seekBarInterface;
 
+    private boolean startAfterPrepared = false;
     // for OnErrorListener
     private String messageWhat = "";
     private String messageExtra = "";
@@ -110,7 +111,9 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public void onPrepared(MediaPlayer mp){
         //Log.d(TAG,"onPrepared called");
-        //mp.start();
+        if(startAfterPrepared) {
+            mp.start();
+        }
     }
 
     public void onCompletion(MediaPlayer mp){
@@ -119,19 +122,9 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     ///////////////////////////////////////////
 
-    public void musicPlayThis(String url){
+    public void musicPlayThis(String url, boolean startPlay){
 
-        /*File file = new File(url);
-        for(int i=0;i<file.list().length;i++) {
-            Log.d(TAG, "~~~~file exist~~; " + file.list()[i]);
-        }
-
-        if(file.exists()){
-            Log.d(TAG, "file exist; "+url);
-        }else{
-            Log.d(TAG, "not exist; "+url);
-        }*/
-
+        startAfterPrepared = startPlay;
         try {
             mp3Player.reset();
             mp3Player.setDataSource(url);

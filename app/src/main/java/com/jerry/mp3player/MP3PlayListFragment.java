@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -27,21 +28,23 @@ public class MP3PlayListFragment extends Fragment {
     private static final String TAG = "MP3_PLAYLIST_FRAGMENT";
 
 
-    private View playlistView = null;
+    private View listViewContainer = null;
     private MP3Service mp3Service = null;
+    private ListView listView = null;
+    private ArrayAdapter arrayAdapter = null;
 
     // implement view component here
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        playlistView = inflater.inflate(R.layout.fragment_mp3_playlist, container, false);
+        listViewContainer = inflater.inflate(R.layout.fragment_mp3_playlist, container, false);
 
-        ListView listview = (ListView)playlistView.findViewById(R.id.playlist);
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this.getActivity(),android.R.layout.simple_expandable_list_item_1,MP3MusicFileReader.readSDCardMusic());
+        listView = (ListView)listViewContainer.findViewById(R.id.playlist);
+        arrayAdapter = new ArrayAdapter(this.getActivity(),android.R.layout.simple_expandable_list_item_1,MP3MusicFileReader.readSDCardMusic());
 
-        listview.setAdapter(arrayAdapter);
+        listView.setAdapter(arrayAdapter);
 
         Log.d(TAG, "onCreateView");
-        return playlistView;
+        return listViewContainer;
     }
 
     @Override
@@ -96,6 +99,7 @@ public class MP3PlayListFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+        setViewItemClickListener();
         Log.d(TAG, "onResume");
     }
 
@@ -107,10 +111,22 @@ public class MP3PlayListFragment extends Fragment {
 
     public void setMP3Service(MP3Service mp3Ser){
         mp3Service = mp3Ser;
+        setViewItemClickListener();
+    }
+
+    public void setViewItemClickListener(){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String url = (String)parent.getItemAtPosition(position);
+                url = MP3MusicFileReader.getSdCardDir()+"/"+url;
+                mp3Service.musicPlayThis(url,true);
+            }
+        });
     }
 
     public boolean isViewCreated(){
-        return playlistView != null;
+        return listViewContainer != null;
     }
 
     public boolean isServiceBound(){

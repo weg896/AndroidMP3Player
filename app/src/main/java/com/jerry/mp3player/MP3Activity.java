@@ -43,7 +43,7 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
         public void onServiceConnected(ComponentName name, IBinder service) {
             // get service
             mp3Service = ((MP3Service.MusicBinder)service).getService();
-            mp3Service.musicPlayThis(sampleMP3URL);
+            mp3Service.musicPlayThis(sampleMP3URL,false);
             Log.d(TAG, "onServiceConnected called");
         }
 
