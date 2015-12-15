@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -28,6 +29,8 @@ public class MP3Service extends Service {
     private final IBinder mBinder = new MusicBinder() ;
 
     private Thread mp3Thread;
+    private Handler mp3Handler;
+    private MP3Runnable runn;
 
     public void onCreate(){
         super.onCreate();
@@ -55,10 +58,42 @@ public class MP3Service extends Service {
         }else{
             Log.d(TAG,"using a UI looper");
         }
-        mp3Thread = new Thread(new MP3Runnable("/sdcard/64.mp3"));
+
+        runn = new MP3Runnable("/sdcard/64.mp3");
+        mp3Thread = new Thread(runn);
+        runn.testLooper();
+        mp3Thread.setName("wei xiong thread");
+        runn.setThread(mp3Thread);
         mp3Thread.start();
+
+
+
+        mp3Handler = new Handler();
+        mp3Handler.postDelayed(new testRunnable(), 20);
+
     }
 
+
+    public class testRunnable implements Runnable{
+        public void run(){
+            runn.testLooper();
+            if(mp3Thread.getState() == Thread.State.TERMINATED) {
+                //Log.d(TAG, "thread terminated");
+            }else if(mp3Thread.getState() == Thread.State.BLOCKED){
+                //Log.d(TAG, "thread blocked");
+                mp3Handler.postDelayed(testRunnable.this, 100);
+            }else if(mp3Thread.getState() == Thread.State.NEW){
+                //Log.d(TAG, "thread new");
+                mp3Handler.postDelayed(testRunnable.this, 100);
+            }else if(mp3Thread.getState() == Thread.State.RUNNABLE){
+                //Log.d(TAG, "thread runnable");
+                mp3Handler.postDelayed(testRunnable.this, 100);
+            }else if(mp3Thread.getState() == Thread.State.TIMED_WAITING){
+                //Log.d(TAG, "thread TIMED_WAITING");
+                mp3Handler.postDelayed(testRunnable.this, 100);
+            }
+        }
+    }
 
     public class MusicBinder extends Binder {
         MP3Service getService(){

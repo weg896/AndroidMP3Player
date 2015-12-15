@@ -20,12 +20,16 @@ public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, Media
     private String messageExtra = "";
 
     private final String TAG = "MP3_RUNNABLE";
+    private Thread thread;
 
 
-
-    public MP3Runnable(String url){
-        Log.d(TAG,"Thread/runnable create");
+    public MP3Runnable(String url) {
+        Log.d(TAG, "Thread/runnable create");
         mp3url = url;
+    }
+
+    public void setThread(Thread thr){
+        thread = thr;
     }
 
     public void run(){
@@ -52,17 +56,29 @@ public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, Media
             return;
         }
 
-
-
+        Log.d(TAG,"finish runnable");
+        int i=0;
         while(true){
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
                 //Log.d(TAG,"music playing");
-            }catch(InterruptedException e){
-                Log.e(TAG,e.getMessage());
+                if(i==50){
+                    mp3Player.pause();
+                }
+                i++;
+            }catch(InterruptedException e) {
+                Log.e(TAG, e.getMessage());
                 return;
             }
+        }
+        //Log.d(TAG,"finish thread");
+    }
 
+    public void testLooper(){
+        if(Looper.myLooper() != Looper.getMainLooper()){
+            Log.d(TAG,"using a new looper ++ test");
+        }else{
+            Log.d(TAG,"using a UI looper ++ test");
         }
     }
 
