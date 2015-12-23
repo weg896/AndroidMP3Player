@@ -15,9 +15,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,7 +34,13 @@ public class MP3PlayListFragment extends Fragment {
     private View listViewContainer = null;
     private MP3Service mp3Service = null;
     private ListView listView = null;
-    private ArrayAdapter arrayAdapter = null;
+    private SimpleAdapter simpleAdapter = null;
+    private MP3MusicFileReader mp3MusicFileReader = null;
+
+
+    public void setMP3MusicFileReader(MP3MusicFileReader mp3MusicFileReader){
+        this.mp3MusicFileReader = mp3MusicFileReader;
+    }
 
     // implement view component here
     @Override
@@ -39,9 +48,14 @@ public class MP3PlayListFragment extends Fragment {
         listViewContainer = inflater.inflate(R.layout.fragment_mp3_playlist, container, false);
 
         listView = (ListView)listViewContainer.findViewById(R.id.playlist);
-        arrayAdapter = new ArrayAdapter(this.getActivity(),android.R.layout.simple_expandable_list_item_1,MP3MusicFileReader.readSDCardMusic());
+        String tempCurrentDir = mp3MusicFileReader.getCurrentDir();
+        simpleAdapter = new SimpleAdapter(this.getActivity(),
+                mp3MusicFileReader.getDir(tempCurrentDir),
+                R.layout.music_item,
+                MP3MusicFileReader.musicListHashMapStr,
+                new int[]{R.id.item_name,R.id.item_type,R.id.item_path,R.id.item_icon});
 
-        listView.setAdapter(arrayAdapter);
+        listView.setAdapter(simpleAdapter);
 
         Log.d(TAG, "onCreateView");
         return listViewContainer;
@@ -118,9 +132,22 @@ public class MP3PlayListFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String url = (String)parent.getItemAtPosition(position);
-                url = MP3MusicFileReader.getSdCardDir()+"/"+url;
-                mp3Service.musicPlayThis(url,true);
+                HashMap<String, Object> tempHashMap = (HashMap<String, Object>)parent.getItemAtPosition(position);
+                int tempType = (int)tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[1]);
+                switch(tempType) {
+                    case R.integer.PARENT_PATH:
+                    case R.integer.FOLDER:
+                        simpleAdapter = new SimpleAdapter(MP3PlayListFragment.this.getActivity(),
+                                mp3MusicFileReader.getDir((String) tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[2])),
+                                R.layout.music_item,
+                                MP3MusicFileReader.musicListHashMapStr,
+                                new int[]{R.id.item_name, R.id.item_type, R.id.item_path, R.id.item_icon});
+                        listView.setAdapter(simpleAdapter);
+                        break;
+                    case R.integer.MUSIC_FILE:
+                        mp3Service.musicPlayThis((String) tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[2]), true);
+                        break;
+                }
             }
         });
     }

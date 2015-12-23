@@ -1,4 +1,8 @@
 <resources>
     <integer name="card_flip_time_full">300</integer>
     <integer name="card_flip_time_half">150</integer>
+
+    <integer name="PARENT_PATH">0</integer>
+    <integer name="FOLDER">1</integer>
+    <integer name="MUSIC_FILE">2</integer>
 </resources>

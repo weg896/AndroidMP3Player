@@ -30,6 +30,8 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
     private MP3Service mp3Service = null;
     private String sampleMP3URL = "/sdcard/gate.ogg";
 
+    private MP3MusicFileReader mp3MusicFileReader = null;
+
     private Handler mHandler = new Handler();
     private boolean mFlipped = false;
 
@@ -63,6 +65,10 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
         controlFragment = (MP3ControlFragment)getFragmentManager().findFragmentByTag("control_fragment");
         playlistFragment = (MP3PlayListFragment)getFragmentManager().findFragmentByTag("playlist_fragment");
 
+        if(mp3MusicFileReader == null){
+            mp3MusicFileReader = new MP3MusicFileReader();
+        }
+
 
         if(controlFragment == null) {
             controlFragment = new MP3ControlFragment();
@@ -74,6 +80,7 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
 
         if(playlistFragment == null){
             playlistFragment = new MP3PlayListFragment();
+            playlistFragment.setMP3MusicFileReader(mp3MusicFileReader);
         }
 
         servicePreparedListener.postDelayed(servicePreparedRunnable,20);
