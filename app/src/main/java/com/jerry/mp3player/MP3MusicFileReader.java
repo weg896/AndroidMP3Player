@@ -17,12 +17,13 @@ import java.util.Map;
 
 /**
  * Created by test on 12/10/2015.
+ * this class is for read the music file and folder location
+ * for the local storage
  */
 public class MP3MusicFileReader {
 
     private final static String TAG = "MP3_Music_File_Reader";
     private String currentDir = null;
-    private final MP3MusicFileFilter fileFilter;
     protected static final String[] musicListHashMapStr = {"name","type","path","icon"};
 
     private ArrayList<HashMap<String, Object>> musicList = null;
@@ -31,7 +32,6 @@ public class MP3MusicFileReader {
     public MP3MusicFileReader(){
         rootDir = Environment.getExternalStorageDirectory().getPath();
         currentDir = rootDir;
-        fileFilter = new MP3MusicFileFilter();
         Log.d(TAG, "sdcard dir: " + rootDir);
         getDir(rootDir);
     }

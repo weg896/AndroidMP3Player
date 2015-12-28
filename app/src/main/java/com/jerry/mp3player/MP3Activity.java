@@ -20,24 +20,30 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * this activity is working as a container and connector
+ * it contain the control fragment, playlist fragment, and config fragment
+ * and it maintain the connection to the mp3 service
+ */
 public class MP3Activity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener{
 
     private static final String TAG = "MP3_ACTIVITY";
 
-    private MP3ControlFragment controlFragment;
-    private MP3PlayListFragment playlistFragment;
+    private MP3ControlFragment controlFragment; // music controller screen
+    private MP3PlayListFragment playlistFragment; // music file and folder screen
+    private MP3ConfigFragment configFragment; // service connector when screen is rotating
 
-    private MP3Service mp3Service = null;
+    private MP3Service mp3Service = null; // a service that holding a media player object
     private String sampleMP3URL = "/sdcard/gate.ogg";
 
     private MP3MusicFileReader mp3MusicFileReader = null;
 
-    private Handler mHandler = new Handler();
+    // music controller screen and music file folder screen switch value
+    private Handler flipHandler = new Handler();
     private boolean mFlipped = false;
 
     private Handler servicePreparedListener = new Handler();
 
-    private MP3ConfigFragment configFragment;
 
     // connect to the service
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -45,7 +51,7 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
         public void onServiceConnected(ComponentName name, IBinder service) {
             // get service
             mp3Service = ((MP3Service.MusicBinder)service).getService();
-            mp3Service.musicPlayThis(sampleMP3URL,false);
+            mp3Service.musicPlayThis(sampleMP3URL,false,sampleMP3URL);
             Log.d(TAG, "onServiceConnected called");
         }
 
@@ -83,7 +89,7 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
             playlistFragment.setMP3MusicFileReader(mp3MusicFileReader);
         }
 
-        servicePreparedListener.postDelayed(servicePreparedRunnable,20);
+        servicePreparedListener.postDelayed(servicePreparedRunnable,30);
 
         if(configFragment == null){
             configFragment = new MP3ConfigFragment();
@@ -97,8 +103,6 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
 
         mFlipped = (getFragmentManager().getBackStackEntryCount() > 0);
         getFragmentManager().addOnBackStackChangedListener(this);
-
-
     }
 
 
@@ -133,6 +137,12 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
         Log.d(TAG, "onStop");
     }
 
+    @Override
+    public void onBackPressed() {
+        // empty code, just for disable the android default back button
+        // so that user press back button won't call onDestroy()
+    }
+
 
     public boolean onCreateOptionsMenu(Menu menu){
         super.onCreateOptionsMenu(menu);
@@ -163,6 +173,7 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
         invalidateOptionsMenu();
     }
 
+    // switching music controller screen and music file folder screen
     private void flipCard(){
         if(mFlipped){
             getFragmentManager().popBackStack();
@@ -179,13 +190,15 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
                 .replace(R.id.fragment_container, playlistFragment,"playlist_fragment")
                 .addToBackStack(null)
                 .commit();
-        mHandler.post(new Runnable() {
+        flipHandler.post(new Runnable() {
             public void run() {
                 invalidateOptionsMenu();
             }
         });
     }
 
+    // make sure music controller screen and music file folder screen
+    // connecting to service after switching screen
     private Runnable servicePreparedRunnable = new Runnable(){
         public void run(){
             if(mp3Service != null) {
@@ -198,7 +211,7 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
                     Log.d(TAG, "playlist fragment set service");
                 }
             }
-            servicePreparedListener.postDelayed(this, 20);
+            servicePreparedListener.postDelayed(this, 30);
         }
     };
 }

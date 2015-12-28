@@ -6,6 +6,8 @@ import android.util.Log;
 
 /**
  * Created by test on 11/27/2015.
+ * this class is for experiment,
+ * test if media player object can run in a new thread rather that the UI thread
  */
 public class MP3Runnable implements Runnable, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
 

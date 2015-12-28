@@ -9,59 +9,52 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.jerry.mp3player.MP3ControlFragment">
 
+
+    <ImageView
+        android:layout_width="250sp"
+        android:layout_height="250sp"
+        android:id="@+id/music_image_View"
+        android:src="@mipmap/mp3_player_icon"
+        android:layout_marginTop="31sp"
+        android:layout_below="@+id/music_name_textView"
+        android:layout_centerHorizontal="true" />
+
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
         android:text="play/pause"
         android:id="@+id/play_pause_button"
+        android:src="@drawable/play_pop"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="34dp"
-        android:src="@drawable/play_pop"/>
+        android:layout_centerHorizontal="true" />
 
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/progressing_bar"
-        android:layout_marginBottom="38dp"
         android:layout_above="@+id/play_pause_button"
-        android:layout_alignEnd="@+id/forward_5_button" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="27sp" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=" backward "
-        android:id="@+id/backward_5_button"
-        android:layout_alignBottom="@+id/play_pause_button"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=" forward "
-        android:id="@+id/forward_5_button"
-        android:layout_alignTop="@+id/play_pause_button"
-        android:layout_alignParentEnd="true" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Medium Text"
+        android:id="@+id/music_name_textView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
-        android:id="@+id/music_name_textView"
-        android:layout_marginTop="34dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="0:00/0:00"
         android:id="@+id/music_time_textView"
-        android:layout_above="@+id/progressing_bar"
-        android:layout_alignStart="@+id/music_name_textView" />
+        android:layout_alignTop="@+id/play_pause_button"
+        android:layout_alignEnd="@+id/progressing_bar" />
+
+
 
 </RelativeLayout>

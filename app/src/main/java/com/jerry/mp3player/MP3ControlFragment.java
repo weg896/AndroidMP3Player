@@ -18,39 +18,41 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by test on 12/5/2015.
+ * This fragment is the user interface to control music
  */
 public class MP3ControlFragment extends Fragment{
 
     private static final String TAG = "MP3_CONTROL_FRAGMENT";
 
-    // screen view component
+    // screen view components
+    private View controlView = null;
     private ImageButton controlButton = null; // start and stop
-    private Button forward5Button = null; // forward 5 second
-    private Button backward5Button = null; // backward 5 second
     private TextView musicNameTextView = null; // show the music's name
     private TextView musicTimeTextView = null; // show the music's duration and current
     private SeekBar seekBar = null;
     private String currentMusicDuration = "0:00";
 
+    // service communication objects
+    private MP3ControlListener controlListener = null;
     private MP3Service mp3Service = null;
 
+    // seeking bar values
     private Handler seekBarHandler = null;
     private boolean seekFromUser = false;
 
-    private View controlView = null;
-
-    // implement view component here
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        controlView = inflater.inflate(R.layout.fragment_mp3_control, container, false);
         // initial the screen view components
-        controlButton = (ImageButton) controlView.findViewById(R.id.play_pause_button);
-        forward5Button = (Button) controlView.findViewById(R.id.forward_5_button);
-        backward5Button = (Button) controlView.findViewById(R.id.backward_5_button);
+        controlView = inflater.inflate(R.layout.fragment_mp3_control, container, false);
 
+        controlButton = (ImageButton) controlView.findViewById(R.id.play_pause_button);
         musicNameTextView = (TextView) controlView.findViewById(R.id.music_name_textView);
         musicTimeTextView = (TextView) controlView.findViewById(R.id.music_time_textView);
         seekBar = (SeekBar) controlView.findViewById(R.id.progressing_bar);
+
+        if(mp3Service != null){
+            musicNameTextView.setText(mp3Service.getCurrentMusicName());
+        }
 
         Log.d(TAG,"onCreateView ");
         return controlView;
@@ -73,6 +75,7 @@ public class MP3ControlFragment extends Fragment{
         setViewListener();
     }
 
+    //this function should call after the mp3 service ready
     private void setViewListener(){
         if(controlView == null){
             Log.d(TAG, "controlView == null, setViewListener()");
@@ -82,29 +85,36 @@ public class MP3ControlFragment extends Fragment{
             return;
         }
 
-        mp3Service.setSeekBarListener(new MP3SeekBarListener() {
-            public void onDurationPrepared() {
-                int duration = mp3Service.musicDuration();
-                seekBar.setMax(duration);
-                currentMusicDuration = String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(duration),
-                        TimeUnit.MILLISECONDS.toSeconds(duration) -
-                                TimeUnit.MINUTES.toSeconds(
-                                        TimeUnit.MILLISECONDS.toMinutes(duration)
-                                ));
-                int prog = seekBar.getProgress();
-                String timeCur = String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(prog),
-                        TimeUnit.MILLISECONDS.toSeconds(prog) -
-                                TimeUnit.MINUTES.toSeconds(
-                                        TimeUnit.MILLISECONDS.toMinutes(prog)
-                                ));
 
-                musicTimeTextView.setText(timeCur+"/"+currentMusicDuration);
-            }
-        });
+        if(controlListener == null){
+            controlListener = new MP3ControlListener() {
+                public void onDurationPrepared() {
+                    int duration = mp3Service.musicDuration();
+                    seekBar.setMax(duration);
+                    currentMusicDuration = String.format("%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(duration),
+                            TimeUnit.MILLISECONDS.toSeconds(duration) -
+                                    TimeUnit.MINUTES.toSeconds(
+                                            TimeUnit.MILLISECONDS.toMinutes(duration)
+                                    ));
+                    int prog = seekBar.getProgress();
+                    String timeCur = String.format("%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(prog),
+                            TimeUnit.MILLISECONDS.toSeconds(prog) -
+                                    TimeUnit.MINUTES.toSeconds(
+                                            TimeUnit.MILLISECONDS.toMinutes(prog)
+                                    ));
+                    musicTimeTextView.setText(timeCur+"/"+currentMusicDuration);
+                }
+
+                public void onUpdateMusicName(String name){
+                    musicNameTextView.setText(name);
+                }
+            };
+        }
+
+        mp3Service.setControlListener(controlListener);
         Log.d(TAG, "setMP3Service ");
-
 
         // set up listener for screen view components
         controlButton.setOnClickListener(new View.OnClickListener() {
@@ -144,29 +154,15 @@ public class MP3ControlFragment extends Fragment{
             }
         });
 
-        forward5Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mp3Service.musicPlayThis("/sdcard/74.mp3", true);
-            }
-        });
-
-        backward5Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-
         seekBarHandler = new Handler();
         seekBarHandler.postDelayed(seekBarUpdate, 100);
     }
 
-
-    // update duration
+    //this runnable object is for
+    // updating seek point position and music duration time repeatedly
     private Runnable seekBarUpdate = new Runnable(){
         public void run(){
             if(mp3Service != null && !seekFromUser) {
-
                 int duration = mp3Service.musicDuration();
                 if(seekBar.getMax() != duration) {
                     seekBar.setMax(duration);

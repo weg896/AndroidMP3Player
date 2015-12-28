@@ -25,11 +25,11 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by test on 12/5/2015.
+ * This fragment is for showing music files and folder
  */
 public class MP3PlayListFragment extends Fragment {
 
     private static final String TAG = "MP3_PLAYLIST_FRAGMENT";
-
 
     private View listViewContainer = null;
     private MP3Service mp3Service = null;
@@ -132,11 +132,14 @@ public class MP3PlayListFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // musicListHashMapStr = {"name","type","path","icon"};
                 HashMap<String, Object> tempHashMap = (HashMap<String, Object>)parent.getItemAtPosition(position);
                 int tempType = (int)tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[1]);
                 switch(tempType) {
                     case R.integer.PARENT_PATH:
                     case R.integer.FOLDER:
+                        // if user click a folder icon,
+                        // go into this folder and show it files and subfolders
                         simpleAdapter = new SimpleAdapter(MP3PlayListFragment.this.getActivity(),
                                 mp3MusicFileReader.getDir((String) tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[2])),
                                 R.layout.music_item,
@@ -145,7 +148,7 @@ public class MP3PlayListFragment extends Fragment {
                         listView.setAdapter(simpleAdapter);
                         break;
                     case R.integer.MUSIC_FILE:
-                        mp3Service.musicPlayThis((String) tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[2]), true);
+                        mp3Service.musicPlayThis((String) tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[2]), true, (String)tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[0]));
                         break;
                 }
             }

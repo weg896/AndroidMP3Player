@@ -12,16 +12,18 @@ import java.io.IOException;
 
 /**
  * Created by test on 11/26/2015.
+ * this service holds a media player object
+ * and it allows music playing in background
  */
 public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener{
 
-    // define mp3 player action for Intent class
     private static final String TAG = "MP3_SERVICE";
 
     private final IBinder musicBinder = new MusicBinder() ;
     private final MediaPlayer mp3Player = new MediaPlayer();
-    private MP3SeekBarListener seekBarInterface;
+    private MP3ControlListener controlInterface = null;
+    private String currentMusicName="";
 
     private boolean startAfterPrepared = false;
     // for OnErrorListener
@@ -48,6 +50,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     @Override
     public boolean onUnbind(Intent intent) {
         Log.d(TAG, "onUnbind called");
+        stopMusic();
         // All clients have unbound with unbindService()
         return true;
     }
@@ -68,7 +71,6 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     //////////////////////////////////////////////////////////////
     // inner class space
-
     public class MusicBinder extends Binder {
         MP3Service getService(){
             return MP3Service.this;
@@ -120,12 +122,16 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         // TODO:
     }
 
-    ///////////////////////////////////////////
+    /////////////////////////////////////////////////////////////
+    // music control functions
 
-    public void musicPlayThis(String url, boolean startPlay){
-
+    public void musicPlayThis(String url, boolean startPlay, String name){
         startAfterPrepared = startPlay;
         try {
+            if(controlInterface != null) {
+                controlInterface.onUpdateMusicName(name);
+                currentMusicName=name;
+            }
             mp3Player.reset();
             mp3Player.setDataSource(url);
             mp3Player.prepareAsync();
@@ -151,6 +157,10 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         mp3Player.release();
     }
 
+    public String getCurrentMusicName(){
+        return currentMusicName;
+    }
+
     public int musicDuration(){
         return mp3Player.getDuration();
     }
@@ -164,9 +174,13 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         mp3Player.seekTo(position);
     }
 
-    public void setSeekBarListener(MP3SeekBarListener seekBarInterface){
-        this.seekBarInterface = seekBarInterface;
-        this.seekBarInterface.onDurationPrepared();
+
+    // after set the control listener,
+    // this MP3Service can change the MP3ControlFragment's view
+    // the implementation is in MP3ControlFragment
+    public void setControlListener(MP3ControlListener controlInterface){
+        this.controlInterface = controlInterface;
+        this.controlInterface.onDurationPrepared();
     }
 
 }
