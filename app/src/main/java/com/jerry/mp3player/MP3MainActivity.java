@@ -25,7 +25,7 @@ import android.widget.Toast;
  * it contain the control fragment, playlist fragment, and config fragment
  * and it maintain the connection to the mp3 service
  */
-public class MP3Activity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener{
+public class MP3MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener{
 
     private static final String TAG = "MP3_ACTIVITY";
 
@@ -80,7 +80,7 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
             controlFragment = new MP3ControlFragment();
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, controlFragment, "control_fragment")
+                    .replace(R.id.main_acti_fragment_container, controlFragment, "control_fragment")
                     .commit();
         }
 
@@ -187,7 +187,7 @@ public class MP3Activity extends AppCompatActivity implements FragmentManager.On
                 .setCustomAnimations(
                         R.animator.card_flip_right_in, R.animator.card_flip_right_out,
                         R.animator.card_flip_left_in, R.animator.card_flip_left_out)
-                .replace(R.id.fragment_container, playlistFragment,"playlist_fragment")
+                .replace(R.id.main_acti_fragment_container, playlistFragment,"playlist_fragment")
                 .addToBackStack(null)
                 .commit();
         flipHandler.post(new Runnable() {

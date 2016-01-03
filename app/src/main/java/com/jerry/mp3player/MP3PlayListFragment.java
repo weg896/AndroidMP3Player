@@ -1,27 +1,17 @@
 package com.jerry.mp3player;
 
 import android.app.Fragment;
-import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by test on 12/5/2015.
@@ -45,15 +35,15 @@ public class MP3PlayListFragment extends Fragment {
     // implement view component here
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        listViewContainer = inflater.inflate(R.layout.fragment_mp3_playlist, container, false);
+        listViewContainer = inflater.inflate(R.layout.fragment_playlist_mp3, container, false);
 
-        listView = (ListView)listViewContainer.findViewById(R.id.playlist);
+        listView = (ListView)listViewContainer.findViewById(R.id.frag_play_playlist);
         String tempCurrentDir = mp3MusicFileReader.getCurrentDir();
         simpleAdapter = new SimpleAdapter(this.getActivity(),
                 mp3MusicFileReader.getDir(tempCurrentDir),
-                R.layout.music_item,
+                R.layout.music_item_mp3,
                 MP3MusicFileReader.musicListHashMapStr,
-                new int[]{R.id.item_name,R.id.item_type,R.id.item_path,R.id.item_icon});
+                new int[]{R.id.musi_item_name,R.id.musi_item_type,R.id.musi_item_path,R.id.musi_item_icon});
 
         listView.setAdapter(simpleAdapter);
 
@@ -142,13 +132,14 @@ public class MP3PlayListFragment extends Fragment {
                         // go into this folder and show it files and subfolders
                         simpleAdapter = new SimpleAdapter(MP3PlayListFragment.this.getActivity(),
                                 mp3MusicFileReader.getDir((String) tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[2])),
-                                R.layout.music_item,
+                                R.layout.music_item_mp3,
                                 MP3MusicFileReader.musicListHashMapStr,
-                                new int[]{R.id.item_name, R.id.item_type, R.id.item_path, R.id.item_icon});
+                                new int[]{R.id.musi_item_name, R.id.musi_item_type, R.id.musi_item_path, R.id.musi_item_icon});
                         listView.setAdapter(simpleAdapter);
                         break;
                     case R.integer.MUSIC_FILE:
-                        mp3Service.musicPlayThis((String) tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[2]), true, (String)tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[0]));
+                        mp3Service.musicPlayThis((String) tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[2]),
+                                true, (String)tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[0]));
                         break;
                 }
             }

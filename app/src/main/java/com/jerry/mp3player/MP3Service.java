@@ -97,7 +97,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     //////////////////////////////////////////////////////////////
     // MediaPlayer interface
     public boolean onError(MediaPlayer mp,int what, int extra){
-/*
+
         switch(what) {
             case MediaPlayer.MEDIA_ERROR_UNKNOWN:
                 messageWhat = "MEDIA_ERROR_UNKNOWN.";
@@ -123,7 +123,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
             default:
                 messageExtra = "maybe MEDIA_ERROR_SYSTEM.(low level)";
         }
-        Log.e(TAG, messageWhat + " " + messageExtra);*/
+        Log.e(TAG, messageWhat + " " + messageExtra);
         return false;
     }
 
@@ -210,7 +210,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
         for (int widgetId : allWidgetIds) {
             RemoteViews remoteViews = new RemoteViews(this.getApplicationContext().getPackageName(), R.layout.widget_mp3);
-            remoteViews.setTextViewText(R.id.music_name, currentMusicName);
+            remoteViews.setTextViewText(R.id.widg_music_name, currentMusicName);
 
             // Register an onClickListener for appWidget button
             Intent clickIntent = new Intent(this.getApplicationContext(), MP3AppWidgetProvider.class);
@@ -218,7 +218,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
             clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.play_stop, pendingIntent);
+            remoteViews.setOnClickPendingIntent(R.id.widg_play_stop, pendingIntent);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
 
@@ -237,9 +237,9 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         public void onReceive(Context context, Intent intent){
             Log.d(TAG, "MP3ServiceActionReceiver-onReceive " + intent.getAction());
             if(mp3Player.isPlaying()){
-                mp3Player.pause();
+                mp3Player.stop();
             }else{
-                musicPlayThis(currentMusicName, false, currentMusicName);
+                musicPlayThis(currentMusicName, true, currentMusicName);
             }
         }
     }

@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- all id in this xml start at "widg_" represent widget -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout"
@@ -5,7 +7,7 @@
     android:layout_height="match_parent"
     android:layout_margin="8dp">
     <TextView
-        android:id="@+id/music_name"
+        android:id="@+id/widg_music_name"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -15,7 +17,7 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/play_stop"
+        android:id="@+id/widg_play_stop"
         android:src="@drawable/play_pop"/>
 
 </LinearLayout>

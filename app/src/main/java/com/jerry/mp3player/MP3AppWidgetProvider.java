@@ -1,5 +1,6 @@
 package com.jerry.mp3player;
 
+import android.app.ActivityManager;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -53,10 +54,12 @@ public class MP3AppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "onUpdate");
+
         ComponentName thisWidget = new ComponentName(context, MP3AppWidgetProvider.class);
-        int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-        Intent serviceIntent = new Intent(context, MP3Service.class);
-        serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
-        context.startService(serviceIntent);
+            int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+            Intent serviceIntent = new Intent(context, MP3Service.class);
+            serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
+            context.startService(serviceIntent);
+
     }
 }
