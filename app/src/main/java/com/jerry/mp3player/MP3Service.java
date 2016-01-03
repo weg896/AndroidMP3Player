@@ -1,12 +1,19 @@
 package com.jerry.mp3player;
 
+import android.app.PendingIntent;
 import android.app.Service;
+import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -18,17 +25,22 @@ import java.io.IOException;
 public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener{
 
+    public static final String ACTION = "play_pause_music";
+
     private static final String TAG = "MP3_SERVICE";
 
     private final IBinder musicBinder = new MusicBinder() ;
     private final MediaPlayer mp3Player = new MediaPlayer();
     private MP3ControlListener controlInterface = null;
-    private String currentMusicName="";
+    private String currentMusicName="/sdcard/gate.ogg";
+
+    private final MP3ServiceActionReceiver serviceActionReceiver = new MP3ServiceActionReceiver();
 
     private boolean startAfterPrepared = false;
     // for OnErrorListener
     private String messageWhat = "";
     private String messageExtra = "";
+
 
     public void onCreate(){
         super.onCreate();
@@ -36,8 +48,11 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         Log.d(TAG,"onCrate called");
     }
 
+    // mp3Service as a broadcast sender, and mp3AppWidgetProvider as a broadcast receiver
     public int onStartCommand(Intent intent, int flags, int startId){
-        Log.d(TAG, "onStartCommand called");
+        Log.d(TAG, "onStartCommand called "+this.toString());
+        setAppWidgetClickEvent(intent);
+        setServiceActionReceiver();
         return START_STICKY;
     }
 
@@ -50,10 +65,11 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     @Override
     public boolean onUnbind(Intent intent) {
         Log.d(TAG, "onUnbind called");
-        stopMusic();
+        // stopMusic();
         // All clients have unbound with unbindService()
         return true;
     }
+
     @Override
     public void onRebind(Intent intent) {
         // A client is binding to the service with bindService(),
@@ -154,6 +170,9 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public void stopMusic(){
         mp3Player.stop();
+    }
+
+    public void releaseMusic(){
         mp3Player.release();
     }
 
@@ -174,7 +193,6 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         mp3Player.seekTo(position);
     }
 
-
     // after set the control listener,
     // this MP3Service can change the MP3ControlFragment's view
     // the implementation is in MP3ControlFragment
@@ -183,4 +201,46 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         this.controlInterface.onDurationPrepared();
     }
 
+
+    private void setAppWidgetClickEvent(Intent intent){
+        Log.d(TAG,"setAppWidgetClickEvent");
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this.getApplicationContext());
+        int[] allWidgetIds = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+
+        for (int widgetId : allWidgetIds) {
+            RemoteViews remoteViews = new RemoteViews(this.getApplicationContext().getPackageName(), R.layout.widget_mp3);
+            remoteViews.setTextViewText(R.id.music_name, currentMusicName);
+
+            // Register an onClickListener for appWidget button
+            Intent clickIntent = new Intent(this.getApplicationContext(), MP3AppWidgetProvider.class);
+            clickIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+            clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteViews.setOnClickPendingIntent(R.id.play_stop, pendingIntent);
+            appWidgetManager.updateAppWidget(widgetId, remoteViews);
+        }
+
+    }
+
+    // set up broadcast receiver for responding music action
+    private void setServiceActionReceiver(){
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION);
+        registerReceiver(serviceActionReceiver, intentFilter);
+    }
+
+
+    // an inner class for responding music action from appWidget
+    public class MP3ServiceActionReceiver extends BroadcastReceiver{
+        public void onReceive(Context context, Intent intent){
+            Log.d(TAG, "MP3ServiceActionReceiver-onReceive " + intent.getAction());
+            if(mp3Player.isPlaying()){
+                mp3Player.pause();
+            }else{
+                musicPlayThis(currentMusicName, false, currentMusicName);
+            }
+        }
+    }
 }
