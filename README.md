@@ -25,8 +25,8 @@ Then the MediaPlayer can run in a new thread or UI thread.
 implemented appwidget via broadcast. 
 Existing bugs on appwidget communicating with service
 
-![control view](./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg =250*) 
-![files view](./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg =250*) 
+![control view](./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg =80*128) 
+![files view](./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg =80*128) 
 
 ----------------------------------------------------------------------
 ### version 0.0.3 
