@@ -26,7 +26,7 @@ implemented appwidget via broadcast.
 Existing bugs on appwidget communicating with service
 
 ![control view](https://octodex.github.com/images/yaktocat.png) 
-![files view](./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg =250x) 
+![files view](./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg) 
 
 ----------------------------------------------------------------------
 ### version 0.0.3 
