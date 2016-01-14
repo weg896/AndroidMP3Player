@@ -140,6 +140,7 @@ public class MP3PlayListFragment extends Fragment {
                     case R.integer.MUSIC_FILE:
                         mp3Service.musicPlayThis((String) tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[2]),
                                 true, (String)tempHashMap.get(MP3MusicFileReader.musicListHashMapStr[0]));
+
                         break;
                 }
             }

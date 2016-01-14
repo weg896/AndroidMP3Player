@@ -10,4 +10,6 @@ public interface MP3ControlListener {
 
     public void onUpdateMusicName(String name);
 
+    public void onUpdatePlayPauseButton(boolean play);
+
 }

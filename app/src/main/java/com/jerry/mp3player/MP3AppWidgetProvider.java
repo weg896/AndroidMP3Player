@@ -31,6 +31,10 @@ public class MP3AppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         Log.d(TAG, "onDisabled");
+
+        Intent musicControlIntent = new Intent(MP3Service.MUSIC_TAG);
+        musicControlIntent.putExtra(MP3Service.MUSIC_CODE, MP3Service.MUSIC_STOP);
+        context.sendBroadcast(musicControlIntent);
         super.onDisabled(context);
     }
 
@@ -40,7 +44,14 @@ public class MP3AppWidgetProvider extends AppWidgetProvider {
 
         // receive the action by appWidget button clicking
         // noticing mp3Service so that it can respond for the clicking
-        Intent musicControlIntent = new Intent(MP3Service.ACTION);
+        Intent musicControlIntent = new Intent(MP3Service.MUSIC_TAG);
+
+        boolean isPlaying = intent.getBooleanExtra(MP3Service.MUSICING, true);
+        if(isPlaying) {
+            musicControlIntent.putExtra(MP3Service.MUSIC_CODE, MP3Service.MUSIC_PAUSE);
+        }else {
+            musicControlIntent.putExtra(MP3Service.MUSIC_CODE, MP3Service.MUSIC_PLAY);
+        }
         context.sendBroadcast(musicControlIntent);
         super.onReceive(context, intent);
     }

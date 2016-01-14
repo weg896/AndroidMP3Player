@@ -21,6 +21,14 @@ MediaPlayer object will use it, if doesn't have, use the mainLooper
 Then the MediaPlayer can run in a new thread or UI thread.
 
 ----------------------------------------------------------------------
+### version 0.0.4
+implemented appwidget via broadcast. 
+Existing bugs on appwidget communicating with service
+
+![control view](https://github.com/weg896/AndroidMP3Player/Screenshot_2016-01-13-21-58-41.jpg =250x) 
+![files view](https://github.com/weg896/AndroidMP3Player/Screenshot_2016-01-13-21-58-56.jpg =250x) 
+
+----------------------------------------------------------------------
 ### version 0.0.3 
 fix some miner bugs, and add comment to files. 
 user can click the icon on the up right 
@@ -66,6 +74,6 @@ next version will try to implement a Service
 so that music can play on background
 
 main idea
-1. Media object get the mp3 stream from internet and prepare for play
-2. Button object setup event listener for control music play and pause
-3. Handler object update the progress bar by implement Runnable object
+1. Media object get the mp3 stream from internet and prepare for play 1
+2. Button object setup event listener for control music play and pause 2
+3. Handler object update the progress bar by implement Runnable object 3

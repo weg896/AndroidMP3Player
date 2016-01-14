@@ -25,7 +25,12 @@ import java.io.IOException;
 public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener{
 
-    public static final String ACTION = "play_pause_music";
+    public static final String MUSIC_TAG = "com.jerry.mp3player.MUSIC_TAG";
+    public static final String MUSIC_CODE = "com.jerry.mp3player.MUSIC_CODE";
+    public static final String MUSICING = "com.jerry.mp3player.MUSICING";
+    public static final int MUSIC_PLAY = 0;
+    public static final int MUSIC_PAUSE = 1;
+    public static final int MUSIC_STOP = 2;
 
     private static final String TAG = "MP3_SERVICE";
 
@@ -53,6 +58,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
         Log.d(TAG, "onStartCommand called "+this.toString());
         setAppWidgetClickEvent(intent);
         setServiceActionReceiver();
+        musicPlayThis(currentMusicName, false, currentMusicName);
         return START_STICKY;
     }
 
@@ -97,7 +103,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     //////////////////////////////////////////////////////////////
     // MediaPlayer interface
     public boolean onError(MediaPlayer mp,int what, int extra){
-
+        Log.d(TAG, "onError");
         switch(what) {
             case MediaPlayer.MEDIA_ERROR_UNKNOWN:
                 messageWhat = "MEDIA_ERROR_UNKNOWN.";
@@ -128,14 +134,17 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     }
 
     public void onPrepared(MediaPlayer mp){
-        //Log.d(TAG,"onPrepared called");
+        Log.d(TAG,"onPrepared called");
         if(startAfterPrepared) {
             mp.start();
         }
     }
 
     public void onCompletion(MediaPlayer mp){
-        // TODO:
+        Log.d(TAG, "onCompletion");
+        if(controlInterface != null) {
+            controlInterface.onUpdatePlayPauseButton(false);
+        }
     }
 
     /////////////////////////////////////////////////////////////
@@ -143,11 +152,12 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public void musicPlayThis(String url, boolean startPlay, String name){
         startAfterPrepared = startPlay;
+        if(controlInterface != null) {
+            controlInterface.onUpdateMusicName(name);
+            controlInterface.onUpdatePlayPauseButton(startPlay);
+            currentMusicName = name;
+        }
         try {
-            if(controlInterface != null) {
-                controlInterface.onUpdateMusicName(name);
-                currentMusicName=name;
-            }
             mp3Player.reset();
             mp3Player.setDataSource(url);
             mp3Player.prepareAsync();
@@ -162,10 +172,16 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
 
     public void startMusic(){
         mp3Player.start();
+        if(controlInterface != null) {
+            controlInterface.onUpdatePlayPauseButton(true);
+        }
     }
 
     public void pauseMusic(){
         mp3Player.pause();
+        if(controlInterface != null) {
+            controlInterface.onUpdatePlayPauseButton(false);
+        }
     }
 
     public void stopMusic(){
@@ -216,7 +232,6 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
             Intent clickIntent = new Intent(this.getApplicationContext(), MP3AppWidgetProvider.class);
             clickIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
             clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
-
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             remoteViews.setOnClickPendingIntent(R.id.widg_play_stop, pendingIntent);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
@@ -227,7 +242,7 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     // set up broadcast receiver for responding music action
     private void setServiceActionReceiver(){
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ACTION);
+        intentFilter.addAction(MUSIC_TAG);
         registerReceiver(serviceActionReceiver, intentFilter);
     }
 
@@ -236,10 +251,26 @@ public class MP3Service extends Service implements MediaPlayer.OnErrorListener,
     public class MP3ServiceActionReceiver extends BroadcastReceiver{
         public void onReceive(Context context, Intent intent){
             Log.d(TAG, "MP3ServiceActionReceiver-onReceive " + intent.getAction());
-            if(mp3Player.isPlaying()){
-                mp3Player.stop();
-            }else{
-                musicPlayThis(currentMusicName, true, currentMusicName);
+
+            int actionCode = intent.getIntExtra(MUSIC_CODE,-1);
+
+            switch(actionCode) {
+                /*case MUSIC_PLAY:
+                    mp3Player.start();
+                    break;
+                case MUSIC_PAUSE:
+                    mp3Player.pause();
+                    break;*/
+                case MUSIC_STOP:
+                    mp3Player.stop();
+                    break;
+                default: //do nothing
+                    if (mp3Player.isPlaying()) {
+                        mp3Player.pause();
+                    } else {
+                        mp3Player.start();
+                        //musicPlayThis(currentMusicName, true, currentMusicName);
+                    }
             }
         }
     }

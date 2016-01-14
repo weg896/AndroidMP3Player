@@ -51,6 +51,11 @@ public class MP3ControlFragment extends Fragment{
 
         if(mp3Service != null){
             musicNameTextView.setText(mp3Service.getCurrentMusicName());
+            if (mp3Service.isPlaying()) {
+                controlButton.setImageResource(R.drawable.pause_pop);
+            } else {
+                controlButton.setImageResource(R.drawable.play_pop);
+            }
         }
 
         Log.d(TAG,"onCreateView ");
@@ -109,6 +114,15 @@ public class MP3ControlFragment extends Fragment{
                 public void onUpdateMusicName(String name){
                     musicNameTextView.setText(name);
                 }
+
+                public void onUpdatePlayPauseButton(boolean play){
+                    Log.d(TAG,"onUpdatePlayPauseButton");
+                    if (play) {
+                        controlButton.setImageResource(R.drawable.pause_pop);
+                    } else {
+                        controlButton.setImageResource(R.drawable.play_pop);
+                    }
+                }
             };
         }
 
@@ -121,9 +135,11 @@ public class MP3ControlFragment extends Fragment{
             public void onClick(View v) {
                 if (mp3Service.isPlaying()) { // currently playing music, stop it
                     Toast.makeText(getActivity().getApplicationContext(), "Pause music", Toast.LENGTH_SHORT).show();
+                    //controlButton.setImageResource(R.drawable.play_pop);
                     mp3Service.pauseMusic();
                 } else { // currently no music played, start it
                     Toast.makeText(getActivity().getApplicationContext(), "Play music", Toast.LENGTH_SHORT).show();
+                    //controlButton.setImageResource(R.drawable.pause_pop);
                     mp3Service.startMusic();
                 }
             }
