@@ -1,4 +1,4 @@
-# AndroidMP3Player # <img src="app/src/main/res/mipmap-xxxhdpi/mp3_player_icon.png" width="80" height="80" alt="icon"/>
+# AndroidMP3Player <img src="app/src/main/res/mipmap-xxxhdpi/mp3_player_icon.png" width="50" height="50" alt="icon"/>
 ## author: Jerry Guan
 
 ----------------------------------------------------------------------
