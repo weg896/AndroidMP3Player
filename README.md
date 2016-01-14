@@ -25,7 +25,7 @@ Then the MediaPlayer can run in a new thread or UI thread.
 implemented appwidget via broadcast. 
 Existing bugs on appwidget communicating with service
 
-![control view](https://octodex.github.com/images/yaktocat.png =250x) 
+![control view](https://octodex.github.com/images/yaktocat.png) 
 ![files view](./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg =250x) 
 
 ----------------------------------------------------------------------
