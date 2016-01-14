@@ -25,8 +25,8 @@ Then the MediaPlayer can run in a new thread or UI thread.
 implemented appwidget via broadcast. 
 Existing bugs on appwidget communicating with service
 
-![control view](./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg =80*128) 
-![files view](./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg =80*128) 
+<img src="./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg" width="80" height="128"/ alt="control view">
+<img src="./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg" width="80" height="128"/ alt="control view">
 
 ----------------------------------------------------------------------
 ### version 0.0.3 
@@ -74,6 +74,7 @@ next version will try to implement a Service
 so that music can play on background
 
 main idea
+1. Item 1
 1. Media object get the mp3 stream from internet and prepare for play 1
 2. Button object setup event listener for control music play and pause 2
 3. Handler object update the progress bar by implement Runnable object 3
