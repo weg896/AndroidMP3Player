@@ -1,4 +1,4 @@
-# AndroidMP3Player
+# AndroidMP3Player <img src="app/src/main/res/mipmap-xxxhdpi/mp3_player_icon.png" width="80" height="80" alt="icon"/>
 ## author: Jerry Guan
 
 ----------------------------------------------------------------------
@@ -25,8 +25,8 @@ Then the MediaPlayer can run in a new thread or UI thread.
 implemented appwidget via broadcast. 
 Existing bugs on appwidget communicating with service
 
-<img src="./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg" width="160" height="256"/ alt="control view">
-<img src="./appscreenshot/Screenshot_2016-01-13-21-58-56.jpg" width="160" height="256"/ alt="files view">
+<img src="./appscreenshot/Screenshot_2016-01-13-21-58-41.jpg" width="240" height="384"/ alt="control view">
+<img src="./appscreenshot/Screenshot_2016-01-13-21-58-56.jpg" width="240" height="384"/ alt="files view">
 
 ----------------------------------------------------------------------
 ### version 0.0.3 
@@ -73,9 +73,8 @@ a media player only using one Activity and Media classes
 next version will try to implement a Service 
 so that music can play on background
 
-main idea
+#### main idea: 
 
-1. Item 1
-1. Media object get the mp3 stream from internet and prepare for play 1
-2. Button object setup event listener for control music play and pause 2
-3. Handler object update the progress bar by implement Runnable object 3
+1. Media object get the mp3 stream from internet and prepare for play
+2. Button object setup event listener for control music play and pause
+3. Handler object update the progress bar by implement Runnable object
